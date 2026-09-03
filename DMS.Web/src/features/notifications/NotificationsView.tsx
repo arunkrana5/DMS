@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../services/api';
+import api, { API_BASE_URL } from '../../services/api';
 import {
   Bell,
   Trash2,
@@ -136,7 +136,7 @@ export const NotificationsView: React.FC = () => {
 
   const getPreviewUrl = (publicId: string) => {
     const token = localStorage.getItem('dms_token');
-    return `http://localhost:5000/api/v1/documents/${publicId}/preview?token=${token}`;
+    return `${API_BASE_URL}/documents/${publicId}/preview?token=${token}`;
   };
 
   const isImageFile = (name: string) => {

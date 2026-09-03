@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import api from '../../services/api';
+import api, { API_BASE_URL } from '../../services/api';
 import type { DocumentItem, FolderItem } from '../../types';
 import { Pagination } from '../../components/common/Pagination';
 import { useAuth } from '../../context/AuthContext';
@@ -357,7 +357,7 @@ export const DocumentExplorer: React.FC = () => {
 
   const getPreviewUrl = (publicId: string) => {
     const token = localStorage.getItem('dms_token');
-    return `http://localhost:5000/api/v1/documents/${publicId}/preview?token=${token}`;
+    return `${API_BASE_URL}/documents/${publicId}/preview?token=${token}`;
   };
 
   return (
