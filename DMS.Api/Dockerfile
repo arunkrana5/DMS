@@ -1,27 +1,26 @@
-# Step 1: Use .NET 10 SDK on Alpine Linux
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+# Step 1: Build .NET 10 API
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy project file and restore dependencies
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy all project code and publish
 COPY . ./
 RUN dotnet publish -c Release -o /app/out
 
-# Step 2: Use .NET 10 Runtime on Alpine Linux
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+# Step 2: Runtime Environment
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Copy compiled files from build stage
+# 🛠️ INSTALL ICU GLOBALIZATION FOR SQL SERVER:
+RUN apt-get update && apt-get install -y libicu-dev
+
 COPY --from=build /app/out ./
 
-# 🛠️ FIX FOR INOTIFY FILE WATCHER LIMIT CRASH:
+# 🛠️ DISABLE INOTIFY FILE WATCHER CRASH:
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV ASPNETCORE_hostBuilder__reloadConfigOnChange=false
 
-# Configure port 8080 for Render
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
