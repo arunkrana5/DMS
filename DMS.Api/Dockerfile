@@ -1,23 +1,23 @@
-# Step 1: Use .NET 10.0 SDK to build the API
+# Step 1: Use .NET 10.0 SDK to build
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy project file and restore dependencies
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy all project code and publish
 COPY . ./
 RUN dotnet publish -c Release -o /app/out
 
-# Step 2: Use .NET 10.0 Runtime to run the API
+# Step 2: Use .NET 10.0 Runtime to run
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Copy compiled files from build stage
 COPY --from=build /app/out ./
 
-# Configure port 8080 for Render
+# 🔴 FIX FOR EXIT CODE 139 (SIGSEGV CRASH):
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
+# Configure port for Render
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
