@@ -17,6 +17,10 @@ WORKDIR /app
 # Copy compiled files from build stage
 COPY --from=build /app/out ./
 
+# 🛠️ FIX FOR INOTIFY FILE WATCHER LIMIT CRASH:
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV ASPNETCORE_hostBuilder__reloadConfigOnChange=false
+
 # Configure port 8080 for Render
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
