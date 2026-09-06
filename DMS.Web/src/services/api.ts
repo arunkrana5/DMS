@@ -1,6 +1,26 @@
 import axios from 'axios';
 
-export const API_HOST_URL = (import.meta.env.VITE_API_URL || 'https://dms-azie.onrender.com').replace(/\/$/, '');
+const getApiHostUrl = (): string => {
+  // 1. Explicit VITE_API_URL environment variable override if set
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // 2. Vite Development Mode (npm run dev)
+  if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+    return 'http://localhost:5000';
+  }
+
+  // 3. Localhost browser hostname check
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000';
+  }
+
+  // 4. Default Production Hosted Backend API URL
+  return 'https://dms-azie.onrender.com';
+};
+
+export const API_HOST_URL = getApiHostUrl().replace(/\/$/, '');
 export const API_BASE_URL = `${API_HOST_URL}/api/v1`;
 
 export const api = axios.create({
@@ -24,7 +44,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('dms_token');
       localStorage.removeItem('dms_user');
-      window.location.href = '/login';
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

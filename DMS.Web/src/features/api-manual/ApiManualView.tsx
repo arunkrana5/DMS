@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import {
   BookOpen,
   Copy,
@@ -35,6 +36,7 @@ interface ApiCase {
 }
 
 export const ApiManualView: React.FC = () => {
+  const { config } = useTheme();
   const navigate = useNavigate();
   const [mainTab, setMainTab] = useState<'api' | 'superadmin' | 'tenantadmin' | 'enduser'>('superadmin');
   const [activeTab, setActiveTab] = useState<string>('auth');
@@ -329,7 +331,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
       {/* Top Professional Header Bar */}
       <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
@@ -352,7 +354,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
 
           <button
             onClick={() => downloadTextFile('SuperAdmin_Manual.md', superAdminContent)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg shadow-xs transition-all cursor-pointer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-lg shadow-xs transition-all cursor-pointer`}
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download Manual (.md)</span>
@@ -366,7 +368,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
           onClick={() => setMainTab('superadmin')}
           className={`flex items-center justify-center gap-2 p-2.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer ${
             mainTab === 'superadmin'
-              ? 'bg-indigo-600 text-white shadow-md'
+              ? `${config.theme.primaryButtonBg} text-white shadow-md`
               : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'
           }`}
         >
@@ -402,7 +404,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
           onClick={() => setMainTab('api')}
           className={`flex items-center justify-center gap-2 p-2.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer ${
             mainTab === 'api'
-              ? 'bg-blue-600 text-white shadow-md'
+              ? `${config.theme.primaryButtonBg} text-white shadow-md`
               : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'
           }`}
         >
@@ -423,18 +425,18 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
               return (
                 <div
                   key={s.step}
-                  className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col lg:flex-row lg:items-start justify-between gap-4 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all"
+                  className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col lg:flex-row lg:items-start justify-between gap-4 hover:border-slate-400 dark:hover:border-slate-700 transition-all"
                 >
                   <div className="flex items-start gap-3.5 min-w-0 flex-1">
                     {/* Number Badge */}
-                    <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-300 font-extrabold text-sm flex items-center justify-center shrink-0 border border-indigo-200 dark:border-indigo-800 shadow-xs">
+                    <div className={`w-9 h-9 rounded-xl ${config.theme.badgeBg} font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs`}>
                       {s.step}
                     </div>
 
                     <div className="space-y-2 flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                          <IconComp className="w-4 h-4 text-indigo-600" />
+                          <IconComp className={`w-4 h-4 ${config.theme.textHighlight}`} />
                           <span>{s.title}</span>
                         </h3>
                         <span className="px-2 py-0.3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[9px] font-mono font-bold rounded-md border border-slate-200 dark:border-slate-700">
@@ -460,7 +462,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                   <div className="lg:w-80 shrink-0 space-y-2">
                     <button
                       onClick={() => navigate(s.path)}
-                      className="w-full px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      className={`w-full px-3 py-1.5 ${config.theme.badgeBg} font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs`}
                     >
                       <span>{s.actionText}</span>
                     </button>
@@ -644,13 +646,13 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                 onClick={() => setActiveTab(c.id)}
                 className={`w-full text-left p-2 rounded-lg transition-all flex items-center justify-between text-xs font-semibold cursor-pointer ${
                   activeTab === c.id
-                    ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60'
+                    ? `${config.theme.badgeBg} font-bold`
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span className="truncate">{c.title}</span>
                 <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono shrink-0 ml-1.5 ${
-                  c.method === 'POST' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                  c.method === 'POST' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : config.theme.badgeBg
                 }`}>
                   {c.method}
                 </span>
@@ -664,7 +666,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
               <div>
                 <div className="flex items-center gap-2">
                   <span className={`px-2 py-0.5 rounded text-xs font-extrabold font-mono ${
-                    selectedCase.method === 'POST' ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white'
+                    selectedCase.method === 'POST' ? 'bg-emerald-500 text-white' : `${config.theme.primaryButtonBg}`
                   }`}>
                     {selectedCase.method}
                   </span>
@@ -681,7 +683,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
               <span className="truncate">{selectedCase.endpoint}</span>
               <button
                 onClick={() => copyToClipboard(selectedCase.endpoint, 'endpoint')}
-                className="p-1 text-slate-400 hover:text-blue-500 shrink-0 cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 cursor-pointer"
                 title="Copy Endpoint"
               >
                 {copiedId === 'endpoint' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -693,8 +695,8 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Multipart Form Parameters</h3>
                 <div className="bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
                   <table className="w-full text-left text-[11px]">
-                    <thead className="bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-400 uppercase">
-                      <tr>
+                    <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                      <tr className={config.theme.tableHeaderCell}>
                         <th className="px-3 py-1.5">Parameter Key</th>
                         <th className="px-3 py-1.5">Example Value</th>
                         <th className="px-3 py-1.5">Description</th>
@@ -703,7 +705,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                     <tbody className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
                       {selectedCase.formParams.map((p) => (
                         <tr key={p.key}>
-                          <td className="px-3 py-1.5 font-mono font-bold text-blue-600 dark:text-blue-400">{p.key}</td>
+                          <td className={`px-3 py-1.5 font-mono font-bold ${config.theme.textHighlight}`}>{p.key}</td>
                           <td className="px-3 py-1.5 font-mono text-slate-700 dark:text-slate-300">{p.value}</td>
                           <td className="px-3 py-1.5 text-slate-400">{p.desc}</td>
                         </tr>
@@ -720,7 +722,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                   <button
                     onClick={() => setCodeLanguage('curl')}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                      codeLanguage === 'curl' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs' : 'text-slate-400'
+                      codeLanguage === 'curl' ? `bg-white dark:bg-slate-700 ${config.theme.textHighlight} shadow-xs` : 'text-slate-400'
                     }`}
                   >
                     cURL
@@ -728,7 +730,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                   <button
                     onClick={() => setCodeLanguage('javascript')}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                      codeLanguage === 'javascript' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs' : 'text-slate-400'
+                      codeLanguage === 'javascript' ? `bg-white dark:bg-slate-700 ${config.theme.textHighlight} shadow-xs` : 'text-slate-400'
                     }`}
                   >
                     JavaScript / TS
@@ -736,7 +738,7 @@ var response = await client.PostAsync("http://localhost:5000/api/v1/documents/up
                   <button
                     onClick={() => setCodeLanguage('csharp')}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                      codeLanguage === 'csharp' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs' : 'text-slate-400'
+                      codeLanguage === 'csharp' ? `bg-white dark:bg-slate-700 ${config.theme.textHighlight} shadow-xs` : 'text-slate-400'
                     }`}
                   >
                     C# (.NET)

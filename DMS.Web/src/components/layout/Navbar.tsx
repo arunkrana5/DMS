@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Bell, Sun, Moon, Building2, LogOut, CheckCircle2, HardDrive, FileText, X, ChevronDown, Crown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
+import APP_CONFIG from '../../config/app.config';
 import { formatNotificationTime } from '../../features/notifications/NotificationsView';
 
 interface NavbarProps {
@@ -28,6 +30,7 @@ interface TenantOption {
 
 export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTerm, setSearchTerm }) => {
   const { user, tenantName, tenantCode, switchTenant, logout } = useAuth();
+  const { config } = useTheme();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [tenantList, setTenantList] = useState<TenantOption[]>([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -168,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
   };
 
   return (
-    <header className="h-12 border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
+    <header className={`h-12 ${APP_CONFIG.theme.navbarBg} px-4 flex items-center justify-between sticky top-0 z-40 transition-colors`}>
       {/* Search Input */}
       <div className="flex items-center gap-3 flex-1 max-w-lg">
         <div className="relative w-full">
@@ -195,23 +198,23 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
               title="SuperAdmin Tenant Switcher"
             >
               <option value="SUPERADMIN" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold">
-                👑 SUPERADMIN (System Overview)
+                SUPERADMIN
               </option>
               {tenantList
                 .filter((t) => t.tenantCode !== 'SUPERADMIN')
                 .map((t) => (
                   <option key={t.tenantCode} value={t.tenantCode} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium">
-                    🏢 {t.tenantCode} — {t.tenantName}
+                    {t.tenantCode} — {t.tenantName}
                   </option>
                 ))}
             </select>
             <ChevronDown className="w-3 h-3 text-indigo-400 shrink-0 pointer-events-none" />
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 rounded-lg text-[11px] font-medium border border-blue-200/60 dark:border-blue-900/60">
-            <Building2 className="w-3 h-3 text-blue-500" />
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 ${config.theme.badgeBg} rounded-lg text-[11px] font-medium`}>
+            <Building2 className="w-3 h-3" />
             <span className="font-semibold truncate max-w-[120px]">{tenantName}</span>
-            <span className="bg-blue-200/80 dark:bg-blue-800/80 text-blue-900 dark:text-blue-100 px-1 py-0.2 rounded text-[9px] font-mono">
+            <span className="px-1 py-0.2 rounded text-[9px] font-mono bg-white/20 dark:bg-black/20">
               {tenantCode}
             </span>
           </div>
@@ -235,7 +238,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-blue-600 text-white font-extrabold text-[9px] shadow-sm animate-pulse">
+              <span className={`flex h-4 min-w-4 px-1 items-center justify-center rounded-full ${config.theme.primaryButtonBg} text-white font-extrabold text-[9px] shadow-sm animate-pulse`}>
                 {unreadCount}
               </span>
             )}
@@ -245,12 +248,12 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
             <div className="absolute right-0 mt-2 w-88 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl p-3.5 space-y-2.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold ${config.theme.badgeBg}`}>
                     <Bell className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-extrabold text-slate-900 dark:text-white">Activity Alerts</span>
                   {unreadCount > 0 && (
-                    <span className="px-1.5 py-0.2 bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 font-extrabold text-[9px] rounded-full border border-blue-200 dark:border-blue-900">
+                    <span className={`px-1.5 py-0.2 font-extrabold text-[9px] rounded-full ${config.theme.badgeBg}`}>
                       {unreadCount} Unread
                     </span>
                   )}
@@ -258,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllRead}
-                    className="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                    className={`text-[10px] ${config.theme.textHighlight} font-bold hover:underline`}
                   >
                     Mark all read
                   </button>
@@ -268,7 +271,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
               {desktopPermission !== 'granted' ? (
                 <button
                   onClick={requestDesktopPermission}
-                  className="w-full text-center py-1.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-all cursor-pointer shadow-xs flex items-center justify-center gap-1.5"
+                  className={`w-full text-center py-1.5 text-[10px] font-bold ${config.theme.badgeBg} rounded-lg hover:opacity-90 transition-all cursor-pointer shadow-xs flex items-center justify-center gap-1.5`}
                 >
                   <Bell className="w-3 h-3" />
                   <span>Enable Windows OS Desktop Notifications</span>
@@ -288,22 +291,22 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
                     <div
                       key={n.id}
                       className={`py-2.5 px-2 flex items-start justify-between gap-2.5 transition-colors rounded-lg ${
-                        n.unread ? 'bg-blue-50/50 dark:bg-blue-950/30 font-semibold' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                        n.unread ? `${config.theme.badgeBg} font-semibold` : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
                       }`}
                     >
                       <div className="flex items-start gap-2.5 min-w-0">
                         <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 border border-slate-200 dark:border-slate-700">
                           {n.type === 'storage' ? (
-                            <HardDrive className="w-3.5 h-3.5 text-indigo-500" />
+                            <HardDrive className="w-3.5 h-3.5 text-slate-500" />
                           ) : n.type === 'document' ? (
-                            <FileText className="w-3.5 h-3.5 text-blue-500" />
+                            <FileText className={`w-3.5 h-3.5 ${config.theme.textHighlight}`} />
                           ) : (
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                           )}
                         </div>
                         <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
-                            {n.unread && <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>}
+                            {n.unread && <span className={`w-1.5 h-1.5 rounded-full ${config.theme.textHighlight} bg-current shrink-0`}></span>}
                             <div className="font-bold text-slate-900 dark:text-white text-[11px] truncate">{n.title}</div>
                           </div>
                           <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">{n.desc}</div>
@@ -330,7 +333,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
                 <Link
                   to="/notifications"
                   onClick={() => setIsNotifOpen(false)}
-                  className="block w-full py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] rounded-lg transition-colors shadow-xs"
+                  className={`block w-full py-1.5 ${config.theme.primaryButtonBg} text-[11px] rounded-lg transition-colors shadow-xs`}
                 >
                   Open Enterprise Notification Center ➔
                 </Link>
@@ -341,7 +344,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
 
         {/* User Info */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800/80">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[11px] shadow-xs">
+          <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold text-[11px] shadow-xs`}>
             {user?.username?.[0]?.toUpperCase() || 'S'}
           </div>
           <div className="hidden md:block text-left">

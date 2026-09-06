@@ -18,8 +18,10 @@ import {
   Pencil
 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 
 export const ApplicationsView: React.FC = () => {
+  const { config } = useTheme();
   const [apps, setApps] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [routingRules, setRoutingRules] = useState<any[]>([]);
@@ -202,7 +204,7 @@ export const ApplicationsView: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <AppWindow className="w-5 h-5" />
           </div>
           <div>
@@ -225,7 +227,7 @@ export const ApplicationsView: React.FC = () => {
           </div>
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-xl transition-all shrink-0`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Register App</span>
@@ -247,17 +249,17 @@ export const ApplicationsView: React.FC = () => {
         </div>
       )}
 
-      {/* 📋 Enterprise Table List View */}
+      {/* Applications Table */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
         {loading ? (
-          <div className="p-12 text-center text-slate-400 font-medium">Loading registered applications...</div>
+          <div className="p-12 text-center text-slate-400 font-medium">Loading applications...</div>
         ) : apps.length === 0 ? (
           <div className="p-12 text-center text-slate-400 font-medium">No applications registered yet. Click "Register App" to register your application.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[11px]">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-bold uppercase text-[9px] tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr className="whitespace-nowrap">
+              <thead className={`${config.theme.tableHeaderBg} text-[9px]`}>
+                <tr className={`whitespace-nowrap ${config.theme.tableHeaderCell}`}>
                   <th className="p-3.5 w-12 text-center">#</th>
                   <th className="p-3.5">Application 📱</th>
                   <th className="p-3.5">Assigned Tenant 🏢</th>
@@ -277,7 +279,7 @@ export const ApplicationsView: React.FC = () => {
                     <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="p-3.5 text-center font-bold text-slate-400">{(pageIndex - 1) * pageSize + idx + 1}</td>
                       <td className="p-3.5 font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center font-bold shrink-0 border border-purple-200/80 dark:border-purple-800">
+                        <div className={`w-8 h-8 rounded-xl ${config.theme.badgeBg} flex items-center justify-center font-bold shrink-0`}>
                           <AppWindow className="w-4 h-4" />
                         </div>
                         <div>
@@ -294,16 +296,16 @@ export const ApplicationsView: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="p-3.5 font-mono font-bold text-purple-600 dark:text-purple-400">
-                        <span className="px-2 py-0.5 bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-900 rounded-md">
+                      <td className="p-3.5 font-mono font-bold">
+                        <span className={`px-2 py-0.5 ${config.theme.badgeBg} rounded-md`}>
                           {app.applicationCode}
                         </span>
                       </td>
 
                       {/* ☁️ Linked Storage Profile Column */}
                       <td className="p-3.5">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-900 shadow-xs">
-                          <Cloud className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${config.theme.badgeBg} font-bold rounded-lg shadow-xs`}>
+                          <Cloud className="w-3.5 h-3.5 shrink-0" />
                           <span>{storageInfo.name}</span>
                           {storageInfo.isCustomRule ? (
                             <span className="ml-1 text-[9px] font-mono px-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded font-bold">
@@ -397,9 +399,9 @@ export const ApplicationsView: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden space-y-0">
             {/* Modal Header */}
-            <div className="p-4 bg-gradient-to-r from-purple-900/40 to-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold shadow-md">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold shadow-md`}>
                   {editingApp ? <Pencil className="w-4 h-4" /> : <AppWindow className="w-4 h-4" />}
                 </div>
                 <div>
@@ -482,7 +484,7 @@ export const ApplicationsView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                  className={`px-5 py-2 ${config.theme.primaryButtonBg} text-xs rounded-xl shadow-md transition-all cursor-pointer`}
                 >
                   {submitting ? 'Saving...' : editingApp ? 'Update Application' : 'Register Application'}
                 </button>

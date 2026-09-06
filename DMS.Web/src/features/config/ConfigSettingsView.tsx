@@ -19,9 +19,11 @@ import {
   Building2,
   Bell,
   Mail,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 import api from '../../services/api';
+import { useTheme } from '../../context/ThemeContext';
 
 interface ConfigSetting {
   id: number;
@@ -38,6 +40,7 @@ interface ConfigSetting {
 }
 
 export const ConfigSettingsView: React.FC = () => {
+  const { config } = useTheme();
   const [settings, setSettings] = useState<ConfigSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -133,6 +136,7 @@ export const ConfigSettingsView: React.FC = () => {
         setTimeout(() => setSuccessMsg(null), 3000);
         setIsModalOpen(false);
         fetchSettings();
+        window.dispatchEvent(new CustomEvent('dms:theme-updated'));
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to save configuration setting.');
@@ -147,6 +151,7 @@ export const ConfigSettingsView: React.FC = () => {
         setSuccessMsg(`Setting '${item.settingKey}' deleted successfully.`);
         setTimeout(() => setSuccessMsg(null), 3000);
         fetchSettings();
+        window.dispatchEvent(new CustomEvent('dms:theme-updated'));
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete setting.');
@@ -155,6 +160,7 @@ export const ConfigSettingsView: React.FC = () => {
 
   const categories = [
     { code: 'ALL', label: 'All', icon: Sliders },
+    { code: 'THEME', label: 'Theme & Branding', icon: Sparkles },
     { code: 'FIREBASE', label: 'Firebase Push', icon: Bell },
     { code: 'SMTP', label: 'SMTP Email', icon: Mail },
     { code: 'STORAGE', label: 'Storage', icon: HardDrive },
@@ -175,6 +181,8 @@ export const ConfigSettingsView: React.FC = () => {
 
   const getCategoryBadgeColor = (cat: string) => {
     switch (cat.toUpperCase()) {
+      case 'THEME':
+        return 'bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800';
       case 'FIREBASE':
         return 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800';
       case 'SMTP':
@@ -197,7 +205,7 @@ export const ConfigSettingsView: React.FC = () => {
       {/* Header Banner - High Density */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400">
+          <div className={`p-1.5 rounded-lg ${config.theme.badgeBg}`}>
             <Sliders className="w-5 h-5" />
           </div>
           <div>
@@ -217,8 +225,29 @@ export const ConfigSettingsView: React.FC = () => {
           </button>
 
           <button
+            onClick={async () => {
+              try {
+                const res = await api.post('/config-settings/seed-defaults');
+                if (res.data?.success) {
+                  setSuccessMsg('Default configurations seeded successfully!');
+                  setTimeout(() => setSuccessMsg(null), 3000);
+                  fetchSettings();
+                  window.dispatchEvent(new CustomEvent('dms:theme-updated'));
+                }
+              } catch (err: any) {
+                setError(err.response?.data?.message || 'Failed to seed settings.');
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg shadow-xs transition-all cursor-pointer"
+            title="Seed System & Theme Default Settings"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+            <span>Seed Defaults</span>
+          </button>
+
+          <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg shadow-sm transition-all cursor-pointer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-lg shadow-sm transition-all cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Setting</span>
@@ -253,7 +282,7 @@ export const ConfigSettingsView: React.FC = () => {
                 onClick={() => setSelectedCategory(cat.code)}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                    ? `bg-white dark:bg-slate-900 ${config.theme.textHighlight} shadow-xs`
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
@@ -271,7 +300,7 @@ export const ConfigSettingsView: React.FC = () => {
             placeholder="Search key or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-slate-400"
           />
         </div>
       </div>
@@ -280,7 +309,7 @@ export const ConfigSettingsView: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
         {loading ? (
           <div className="p-8 text-center text-slate-400 flex flex-col items-center gap-2">
-            <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+            <RefreshCw className={`w-6 h-6 animate-spin ${config.theme.textHighlight}`} />
             <p className="text-xs font-medium">Loading settings...</p>
           </div>
         ) : filteredSettings.length === 0 ? (
@@ -291,8 +320,8 @@ export const ConfigSettingsView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr>
+              <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                <tr className={config.theme.tableHeaderCell}>
                   <th className="px-4 py-2.5">Setting Key</th>
                   <th className="px-4 py-2.5">Category</th>
                   <th className="px-4 py-2.5">Setting Value</th>
@@ -327,7 +356,7 @@ export const ConfigSettingsView: React.FC = () => {
 
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-1.5">
-                          <code className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-[11px] font-mono text-blue-600 dark:text-blue-400 border border-slate-200/80 dark:border-slate-700/80 max-w-md truncate">
+                          <code className={`bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-[11px] font-mono ${config.theme.textHighlight} border border-slate-200/80 dark:border-slate-700/80 max-w-md truncate`}>
                             {item.isEncrypted && !isValueShown ? '••••••••••••••••' : item.settingValue || '(empty)'}
                           </code>
                           {item.isEncrypted && (
@@ -350,7 +379,7 @@ export const ConfigSettingsView: React.FC = () => {
 
                       <td className="px-4 py-2.5">
                         {item.tenantId !== null ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded">
+                          <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${config.theme.badgeBg} px-2 py-0.5 rounded`}>
                             <Building2 className="w-3 h-3" /> Tenant Override
                           </span>
                         ) : (
@@ -505,7 +534,7 @@ export const ConfigSettingsView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-sm"
+                  className={`px-4 py-1.5 ${config.theme.primaryButtonBg} text-white font-semibold rounded-lg shadow-sm cursor-pointer`}
                 >
                   {editingSetting ? 'Update Setting' : 'Create Setting'}
                 </button>

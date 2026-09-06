@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           userId: 1,
           username: data.username,
           email: data.email,
+          tenantCode: data.tenantCode,
           roles: data.roles,
           permissions: data.permissions,
         };
@@ -53,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('dms_user', JSON.stringify(userData));
         localStorage.setItem('dms_tenant', data.tenantCode);
         localStorage.setItem('dms_tenant_name', data.tenantName);
+        window.dispatchEvent(new CustomEvent('dms:theme-updated'));
         return true;
       }
       return false;
@@ -67,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTenantName(newTenantName);
     localStorage.setItem('dms_tenant', newTenantCode);
     localStorage.setItem('dms_tenant_name', newTenantName);
+    window.dispatchEvent(new CustomEvent('dms:theme-updated'));
     window.location.reload();
   };
 

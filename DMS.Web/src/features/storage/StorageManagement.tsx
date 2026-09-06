@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import type { StorageProfile } from '../../types';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Plus,
   RefreshCw,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const StorageManagement: React.FC = () => {
+  const { config } = useTheme();
   const [profiles, setProfiles] = useState<StorageProfile[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [apps, setApps] = useState<any[]>([]);
@@ -242,7 +244,7 @@ export const StorageManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <div>
           <h1 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight flex items-center gap-2">
-            <Server className="w-5 h-5 text-blue-600" />
+            <Server className={`w-5 h-5 ${config.theme.textHighlight}`} />
             <span>Storage Management</span>
           </h1>
         </div>
@@ -250,7 +252,7 @@ export const StorageManagement: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsRuleModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
           >
             <Link className="w-3.5 h-3.5" />
             <span>+ Link App to Storage</span>
@@ -258,7 +260,7 @@ export const StorageManagement: React.FC = () => {
 
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Storage Profile</span>
@@ -284,7 +286,7 @@ export const StorageManagement: React.FC = () => {
               return (
                 <div key={p.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shrink-0 border border-blue-200 dark:border-blue-900">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${config.theme.badgeBg}`}>
                       {p.providerCode === 'AWS_S3' || p.providerCode === 'AZURE_BLOB' ? <Cloud className="w-5 h-5" /> : <Server className="w-5 h-5" />}
                     </div>
 
@@ -297,7 +299,7 @@ export const StorageManagement: React.FC = () => {
                         </span>
 
                         {p.isDefault && (
-                          <span className="px-2 py-0.3 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[9px] font-extrabold rounded-md border border-blue-200 dark:border-blue-900">
+                          <span className={`px-2 py-0.3 ${config.theme.badgeBg} text-[9px] font-extrabold rounded-md`}>
                             DEFAULT
                           </span>
                         )}
@@ -397,8 +399,8 @@ export const StorageManagement: React.FC = () => {
                     <td className="p-3 text-center text-slate-400">
                       <ArrowRight className="w-4 h-4 inline" />
                     </td>
-                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400">
-                      <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 rounded-md">
+                    <td className={`p-3 font-bold ${config.theme.textHighlight}`}>
+                      <span className={`px-2 py-0.5 ${config.theme.badgeBg} rounded-md`}>
                         ☁️ {rule.storageProfileName}
                       </span>
                     </td>
@@ -508,8 +510,8 @@ export const StorageManagement: React.FC = () => {
               </div>
 
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold">Cancel</button>
-                <button type="submit" className="px-4 py-1.5 bg-blue-600 text-white font-bold rounded-lg shadow-xs">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold cursor-pointer">Cancel</button>
+                <button type="submit" className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-lg shadow-xs cursor-pointer`}>
                   {editingProfile ? 'Update Profile' : 'Save Profile'}
                 </button>
               </div>

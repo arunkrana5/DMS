@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
+import { useTheme } from '../../context/ThemeContext';
 import { Building2, Plus, Search, Users, CheckCircle2, AlertCircle, X, ShieldCheck, Pencil, Trash2 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
 
@@ -29,6 +30,7 @@ interface UserItem {
 }
 
 export const TenantsView: React.FC = () => {
+  const { config } = useTheme();
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +51,7 @@ export const TenantsView: React.FC = () => {
   const [tenantName, setTenantName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [description, setDescription] = useState('');
+  const [primaryColor, setPrimaryColor] = useState('#2563eb');
   const [adminUsername, setAdminUsername] = useState('admin');
   const [adminPassword, setAdminPassword] = useState('Password123!');
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +62,7 @@ export const TenantsView: React.FC = () => {
   const [userPassword, setUserPassword] = useState('Password123!');
   const [userEmail, setUserEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [roleCode, setRoleCode] = useState('USER');
+  const [roleCode, setRoleCode] = useState('TENANT_ADMIN');
 
   // Notification Banner State
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -68,14 +71,14 @@ export const TenantsView: React.FC = () => {
   const fetchTenants = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/tenants?pageIndex=${pageIndex}&pageSize=${pageSize}&search=${encodeURIComponent(searchQuery)}`);
-      if (res.data?.success) {
-        setTenants(res.data.data.items || []);
-        setTotalCount(res.data.data.totalCount || 0);
-        setTotalPages(res.data.data.totalPages || 1);
+      const response = await api.get(`/tenants?pageIndex=${pageIndex}&pageSize=${pageSize}&search=${encodeURIComponent(searchQuery)}`);
+      if (response.data?.success) {
+        setTenants(response.data.data.items || []);
+        setTotalCount(response.data.data.totalCount || 0);
+        setTotalPages(response.data.data.totalPages || 1);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setErrorMsg(err.response?.data?.message || 'Failed to fetch tenants.');
     } finally {
       setLoading(false);
     }
@@ -88,12 +91,12 @@ export const TenantsView: React.FC = () => {
   const fetchTenantUsers = async (tenantId: number) => {
     setLoadingUsers(true);
     try {
-      const res = await api.get(`/users?tenantId=${tenantId}&pageSize=100`);
+      const res = await api.get(`/tenants/${tenantId}/users`);
       if (res.data?.success) {
-        setTenantUsers(res.data.data.items || []);
+        setTenantUsers(res.data.data || []);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Failed to fetch tenant users', err);
     } finally {
       setLoadingUsers(false);
     }
@@ -110,6 +113,7 @@ export const TenantsView: React.FC = () => {
     setTenantName('');
     setContactEmail('');
     setDescription('');
+    setPrimaryColor('#2563eb');
     setAdminUsername('admin');
     setAdminPassword('Password123!');
     setIsTenantModalOpen(true);
@@ -121,6 +125,7 @@ export const TenantsView: React.FC = () => {
     setTenantName(tenant.tenantName);
     setContactEmail(tenant.contactEmail || '');
     setDescription(tenant.description || '');
+    setPrimaryColor(tenant.primaryColor || '#2563eb');
     setIsTenantModalOpen(true);
   };
 
@@ -138,6 +143,7 @@ export const TenantsView: React.FC = () => {
           tenantName: tenantName.trim(),
           contactEmail: contactEmail.trim(),
           description: description.trim(),
+          primaryColor: primaryColor || '#2563eb',
           isActive: true
         });
 
@@ -146,6 +152,7 @@ export const TenantsView: React.FC = () => {
           setTimeout(() => setSuccessMsg(null), 4000);
           setIsTenantModalOpen(false);
           fetchTenants();
+          window.dispatchEvent(new CustomEvent('dms:theme-updated'));
         }
       } else {
         // Create new
@@ -155,15 +162,17 @@ export const TenantsView: React.FC = () => {
           tenantName: tenantName.trim(),
           contactEmail: contactEmail.trim(),
           description: description.trim(),
+          primaryColor: primaryColor || '#2563eb',
           adminUsername: adminUsername.trim(),
           adminPassword
         });
 
         if (res.data?.success) {
-          setSuccessMsg(`Tenant '${tenantName}' created successfully.`);
+          setSuccessMsg(`Tenant '${tenantName}' provisioned successfully.`);
           setTimeout(() => setSuccessMsg(null), 4000);
           setIsTenantModalOpen(false);
           fetchTenants();
+          window.dispatchEvent(new CustomEvent('dms:theme-updated'));
         }
       }
     } catch (err: any) {
@@ -239,7 +248,7 @@ export const TenantsView: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <Building2 className="w-5 h-5" />
           </div>
           <div>
@@ -266,7 +275,7 @@ export const TenantsView: React.FC = () => {
 
           <button
             onClick={handleOpenAddTenant}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create New Tenant</span>
@@ -298,8 +307,8 @@ export const TenantsView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr className="whitespace-nowrap">
+              <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                <tr className={`whitespace-nowrap ${config.theme.tableHeaderCell}`}>
                   <th className="px-4 py-3">Tenant Code</th>
                   <th className="px-4 py-3">Organization Name</th>
                   <th className="px-4 py-3">Contact Email</th>
@@ -312,8 +321,8 @@ export const TenantsView: React.FC = () => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
                 {tenants.map((t) => (
                   <tr key={t.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-3 font-extrabold font-mono text-indigo-600 dark:text-indigo-400 text-xs">
-                      <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 rounded-md">
+                    <td className="px-4 py-3 font-extrabold font-mono text-xs">
+                      <span className={`px-2 py-0.5 ${config.theme.badgeBg} rounded-md`}>
                         {t.tenantCode}
                       </span>
                     </td>
@@ -325,7 +334,7 @@ export const TenantsView: React.FC = () => {
                       {t.contactEmail || 'N/A'}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-lg text-[10px] font-bold border border-blue-200 dark:border-blue-900 shadow-xs">
+                      <span className={`px-2.5 py-1 ${config.theme.badgeBg} rounded-lg text-[10px] font-bold shadow-xs`}>
                         {t.userCount} users
                       </span>
                     </td>
@@ -346,13 +355,13 @@ export const TenantsView: React.FC = () => {
                           className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-bold transition-all inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700 cursor-pointer shadow-xs"
                           title="Manage Tenant Users"
                         >
-                          <Users className="w-3.5 h-3.5 text-indigo-500" />
+                          <Users className={`w-3.5 h-3.5 ${config.theme.textHighlight}`} />
                           <span>Users ({t.userCount})</span>
                         </button>
 
                         <button
                           onClick={() => handleOpenEditTenant(t)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-lg transition-colors cursor-pointer"
+                          className={`p-1.5 text-slate-400 hover:${config.theme.textHighlight} hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer`}
                           title="Edit Tenant"
                         >
                           <Pencil className="w-3.5 h-3.5" />
@@ -393,9 +402,9 @@ export const TenantsView: React.FC = () => {
       {isTenantModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden space-y-0 text-xs">
-            <div className="p-4 bg-gradient-to-r from-indigo-900/40 to-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold shadow-md`}>
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div>
@@ -448,6 +457,41 @@ export const TenantsView: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
+                  Tenant Brand Theme Primary Color
+                </label>
+                <div className="flex items-center gap-2">
+                  {[
+                    { name: 'Blue', hex: '#2563eb' },
+                    { name: 'Red', hex: '#dc2626' },
+                    { name: 'Emerald', hex: '#059669' },
+                    { name: 'Violet', hex: '#7c3aed' },
+                    { name: 'Amber', hex: '#d97706' },
+                    { name: 'Indigo', hex: '#4f46e5' }
+                  ].map((color) => (
+                    <button
+                      key={color.hex}
+                      type="button"
+                      onClick={() => setPrimaryColor(color.hex)}
+                      className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${
+                        primaryColor.toLowerCase() === color.hex.toLowerCase() ? 'scale-125 border-slate-900 dark:border-white shadow-md' : 'border-transparent hover:scale-110'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    className="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer bg-transparent p-0"
+                    title="Custom Color Picker"
+                  />
+                  <span className="font-mono text-[10px] font-bold text-slate-500">{primaryColor}</span>
+                </div>
+              </div>
+
               {!editingTenant && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-2">
                   <div className="font-bold text-[11px] text-slate-700 dark:text-slate-300">Initial Admin Credentials</div>
@@ -498,7 +542,7 @@ export const TenantsView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50`}
                 >
                   {submitting ? 'Saving...' : editingTenant ? 'Update Tenant' : 'Provision Tenant'}
                 </button>
@@ -512,9 +556,9 @@ export const TenantsView: React.FC = () => {
       {selectedTenant && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-xs">
-            <div className="p-4 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-md">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold shadow-md`}>
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
@@ -532,7 +576,7 @@ export const TenantsView: React.FC = () => {
                     setUserPassword('Password123!');
                     setIsCreateUserOpen(true);
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                  className={`flex items-center gap-1.5 px-3 py-1 ${config.theme.primaryButtonBg} rounded-lg text-xs transition-colors cursor-pointer`}
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add User</span>
@@ -563,7 +607,7 @@ export const TenantsView: React.FC = () => {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                       {tenantUsers.map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                          <td className="px-3.5 py-2 font-mono font-bold text-blue-600 dark:text-blue-400">{u.username}</td>
+                          <td className={`px-3.5 py-2 font-mono font-bold ${config.theme.textHighlight}`}>{u.username}</td>
                           <td className="px-3.5 py-2 font-semibold text-slate-900 dark:text-white">{u.fullName || '—'}</td>
                           <td className="px-3.5 py-2 font-mono text-[11px] text-slate-500">{u.email}</td>
                           <td className="px-3.5 py-2">
@@ -595,9 +639,9 @@ export const TenantsView: React.FC = () => {
       {isCreateUserOpen && selectedTenant && (
         <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-xs">
-            <div className="p-4 bg-gradient-to-r from-blue-900/40 to-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-md">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold shadow-md`}>
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
@@ -620,7 +664,7 @@ export const TenantsView: React.FC = () => {
                   placeholder="Enter Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs focus:ring-2 focus:ring-slate-400 transition-all"
                 />
               </div>
 
@@ -632,7 +676,7 @@ export const TenantsView: React.FC = () => {
                   placeholder="Enter Password"
                   value={userPassword}
                   onChange={(e) => setUserPassword(e.target.value)}
-                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-slate-400 transition-all"
                 />
               </div>
 
@@ -683,7 +727,7 @@ export const TenantsView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                  className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-xl shadow-md transition-all cursor-pointer`}
                 >
                   Create User
                 </button>

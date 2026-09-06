@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { Layers, Search, Plus, X, Edit2, Trash2, CheckCircle2, AlertCircle, RefreshCw, Building2 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 
 interface TenantModuleItem {
   id: number;
@@ -20,6 +21,7 @@ interface TenantItem {
 }
 
 export const ModulesView: React.FC = () => {
+  const { config } = useTheme();
   const [modules, setModules] = useState<TenantModuleItem[]>([]);
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -193,7 +195,7 @@ export const ModulesView: React.FC = () => {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <Layers className="w-5 h-5" />
           </div>
           <div>
@@ -214,7 +216,7 @@ export const ModulesView: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPageIndex(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all"
             />
           </div>
 
@@ -228,7 +230,7 @@ export const ModulesView: React.FC = () => {
 
           <button
             onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create New Module</span>
@@ -255,15 +257,15 @@ export const ModulesView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <thead className={config.theme.tableHeaderBg}>
                 <tr>
-                  {isSuperAdmin && <th className="px-4 py-3">Tenant</th>}
-                  <th className="px-4 py-3">Module Code</th>
-                  <th className="px-4 py-3">Module Name</th>
-                  <th className="px-4 py-3">Description</th>
-                  <th className="px-4 py-3 text-center">Order</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  {isSuperAdmin && <th className={`px-4 py-3 ${config.theme.tableHeaderCell}`}>Tenant</th>}
+                  <th className={`px-4 py-3 ${config.theme.tableHeaderCell}`}>Module Code</th>
+                  <th className={`px-4 py-3 ${config.theme.tableHeaderCell}`}>Module Name</th>
+                  <th className={`px-4 py-3 ${config.theme.tableHeaderCell}`}>Description</th>
+                  <th className={`px-4 py-3 text-center ${config.theme.tableHeaderCell}`}>Order</th>
+                  <th className={`px-4 py-3 text-center ${config.theme.tableHeaderCell}`}>Status</th>
+                  <th className={`px-4 py-3 text-right ${config.theme.tableHeaderCell}`}>Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
@@ -475,7 +477,7 @@ export const ModulesView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50`}
                 >
                   {submitting ? 'Saving...' : editingModule ? 'Update Module' : 'Create Module'}
                 </button>

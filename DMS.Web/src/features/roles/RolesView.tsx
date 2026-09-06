@@ -13,6 +13,7 @@ import {
   X
 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 
 interface PermissionItem {
   id: number;
@@ -36,6 +37,7 @@ interface RoleItem {
 }
 
 export const RolesView: React.FC = () => {
+  const { config } = useTheme();
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [permissions, setPermissions] = useState<PermissionItem[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
@@ -204,7 +206,7 @@ export const RolesView: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
@@ -236,7 +238,7 @@ export const RolesView: React.FC = () => {
 
           <button
             onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create New Role</span>
@@ -260,8 +262,8 @@ export const RolesView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr className="whitespace-nowrap">
+              <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                <tr className={`whitespace-nowrap ${config.theme.tableHeaderCell}`}>
                   <th className="px-4 py-3">Role Code 🏷️</th>
                   <th className="px-4 py-3">Role Name 🛡️</th>
                   <th className="px-4 py-3">Tenant Namespace 🏢</th>
@@ -273,7 +275,7 @@ export const RolesView: React.FC = () => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
                 {roles.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
+                    <td className={`px-4 py-3 font-mono font-bold ${config.theme.textHighlight} whitespace-nowrap`}>
                       {r.roleCode}
                     </td>
 
@@ -301,7 +303,7 @@ export const RolesView: React.FC = () => {
                           <span className="text-[10px] text-slate-400 italic">No permissions assigned</span>
                         )}
                         {r.permissionCodes && r.permissionCodes.length > 6 && (
-                          <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 font-mono text-[9px] font-extrabold rounded">
+                          <span className={`px-2 py-0.5 ${config.theme.badgeBg} font-mono text-[9px] font-extrabold rounded`}>
                             +{r.permissionCodes.length - 6} more
                           </span>
                         )}
@@ -322,7 +324,7 @@ export const RolesView: React.FC = () => {
                       <div className="inline-flex items-center gap-1">
                         <button
                           onClick={() => handleOpenEdit(r)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-lg transition-colors cursor-pointer"
+                          className={`p-1.5 text-slate-400 hover:${config.theme.textHighlight} hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer`}
                           title="Edit Role & Permissions"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -362,9 +364,9 @@ export const RolesView: React.FC = () => {
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden">
-            <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                <ShieldCheck className={`w-5 h-5 ${config.theme.textHighlight}`} />
                 <div>
                   <h3 className="text-xs font-bold">{editingRole ? `Edit Role: ${editingRole.roleName}` : 'Create New Security Role'}</h3>
                 </div>
@@ -458,7 +460,7 @@ export const RolesView: React.FC = () => {
                       if (selectedPermIds.length === permissions.length) setSelectedPermIds([]);
                       else setSelectedPermIds(permissions.map((p) => p.id));
                     }}
-                    className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className={`text-[10px] font-bold ${config.theme.textHighlight} hover:underline`}
                   >
                     {selectedPermIds.length === permissions.length ? 'Deselect All' : 'Select All Permissions'}
                   </button>
@@ -469,7 +471,7 @@ export const RolesView: React.FC = () => {
                     const catPerms = permissions.filter((p) => p.category === cat);
                     return (
                       <div key={cat} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/60 dark:border-slate-800 space-y-2">
-                        <div className="font-bold text-[10px] uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
+                        <div className={`font-bold text-[10px] uppercase ${config.theme.textHighlight} tracking-wider`}>
                           {cat} Module
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -480,7 +482,7 @@ export const RolesView: React.FC = () => {
                                 key={p.id}
                                 className={`flex items-start gap-2 p-2 rounded-lg border transition-all cursor-pointer ${
                                   isChecked
-                                    ? 'bg-indigo-50/60 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-900 text-indigo-900 dark:text-indigo-100'
+                                    ? config.theme.badgeBg
                                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                                 }`}
                               >
@@ -525,7 +527,7 @@ export const RolesView: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl text-xs shadow-md transition-all"
+                    className={`px-4 py-1.5 ${config.theme.primaryButtonBg} text-xs shadow-md transition-all`}
                   >
                     {editingRole ? 'Save Changes' : 'Create Role'}
                   </button>

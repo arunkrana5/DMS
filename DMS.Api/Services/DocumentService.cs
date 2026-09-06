@@ -666,7 +666,10 @@ public class DocumentService : IDocumentService
         var downloadUrl = $"/api/v1/documents/{d.PublicId}/download";
         var previewUrl = $"/api/v1/documents/{d.PublicId}/preview";
         var basePath = Path.Combine(Directory.GetCurrentDirectory(), "Storage");
-        var fullPhysicalPath = Path.Combine(basePath, d.StorageObjectKey.Replace("/", "\\"));
+        var cleanKey = (d.StorageObjectKey ?? "")
+            .Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
+        var fullPhysicalPath = Path.Combine(basePath, cleanKey);
 
         var uploaderName = !string.IsNullOrWhiteSpace(d.EntityId)
             ? $"{d.EntityId} ({d.EntityType ?? "User"})"

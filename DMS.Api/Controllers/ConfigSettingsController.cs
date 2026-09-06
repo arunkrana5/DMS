@@ -93,6 +93,55 @@ public class ConfigSettingsController : ControllerBase
         }));
     }
 
+    [HttpGet("public-theme")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPublicThemeSettings([FromQuery] string? tenantCode, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(tenantCode) && !string.IsNullOrWhiteSpace(_tenantContext.TenantCode))
+        {
+            tenantCode = _tenantContext.TenantCode;
+        }
+
+        // 1. Fetch Global System Theme Defaults
+        var globalSettings = await _dbContext.ConfigSettings
+            .AsNoTracking()
+            .Where(c => c.Category == "THEME" && c.TenantId == null && c.IsActive)
+            .ToDictionaryAsync(c => c.SettingKey, c => c.SettingValue ?? "", cancellationToken);
+
+        // 2. If tenantCode is provided, merge Tenant-specific ConfigSettings & Tenant.PrimaryColor
+        if (!string.IsNullOrWhiteSpace(tenantCode))
+        {
+            var codeToMatch = tenantCode.Trim().ToLower();
+            var tenant = await _dbContext.Tenants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.TenantCode.ToLower() == codeToMatch, cancellationToken);
+
+            if (tenant != null)
+            {
+                var tenantSettings = await _dbContext.ConfigSettings
+                    .AsNoTracking()
+                    .Where(c => c.Category == "THEME" && c.TenantId == tenant.Id && c.IsActive)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var ts in tenantSettings)
+                {
+                    globalSettings[ts.SettingKey] = ts.SettingValue ?? "";
+                }
+
+                if (!string.IsNullOrWhiteSpace(tenant.PrimaryColor))
+                {
+                    globalSettings["Theme.PrimaryColorHex"] = tenant.PrimaryColor;
+                    globalSettings["Theme.PrimaryColorName"] = tenant.PrimaryColor;
+                }
+
+                globalSettings["Tenant.Code"] = tenant.TenantCode;
+                globalSettings["Tenant.Name"] = tenant.TenantName;
+            }
+        }
+
+        return Ok(ApiResponse<Dictionary<string, string>>.Ok(globalSettings));
+    }
+
     [HttpGet("{key}")]
     public async Task<IActionResult> GetSettingByKey(string key, [FromQuery] int? applicationId, CancellationToken cancellationToken)
     {
@@ -210,7 +259,17 @@ public class ConfigSettingsController : ControllerBase
             // SYSTEM (Platform Operations & Caching)
             new ConfigSetting { SettingKey = "System.EnableAuditLogging", SettingValue = "true", Category = "SYSTEM", DataType = "Boolean", Description = "Enable / Disable Immutable Audit Logging" },
             new ConfigSetting { SettingKey = "System.MigrationPollIntervalSeconds", SettingValue = "5", Category = "SYSTEM", DataType = "Number", Description = "Storage Migration Worker Poll Interval" },
-            new ConfigSetting { SettingKey = "System.CacheExpiryMinutes", SettingValue = "60", Category = "SYSTEM", DataType = "Number", Description = "System In-Memory Cache Expiry Duration" }
+            new ConfigSetting { SettingKey = "System.CacheExpiryMinutes", SettingValue = "60", Category = "SYSTEM", DataType = "Number", Description = "System In-Memory Cache Expiry Duration" },
+
+            // THEME (Branding & UI Customization)
+            new ConfigSetting { SettingKey = "Theme.AppName", SettingValue = "Enterprise DMS", Category = "THEME", DataType = "String", Description = "Global Platform Application Name" },
+            new ConfigSetting { SettingKey = "Theme.AppNameHighlight", SettingValue = "DMS", Category = "THEME", DataType = "String", Description = "Highlighted Prefix/Suffix in App Name" },
+            new ConfigSetting { SettingKey = "Theme.AppSubtitle", SettingValue = "Managed By Arun Rana", Category = "THEME", DataType = "String", Description = "Global Brand Subtitle / Managed By Badge" },
+            new ConfigSetting { SettingKey = "Theme.BrandGradient", SettingValue = "from-blue-600 via-indigo-600 to-slate-900", Category = "THEME", DataType = "String", Description = "Tailwind CSS Gradient for Brand Icons & Highlights" },
+            new ConfigSetting { SettingKey = "Theme.PrimaryColorName", SettingValue = "blue", Category = "THEME", DataType = "String", Description = "Primary Theme Palette Name (blue, indigo, slate, emerald, violet)" },
+            new ConfigSetting { SettingKey = "Theme.CompanyName", SettingValue = "Arun Rana Enterprise", Category = "THEME", DataType = "String", Description = "Enterprise Organization Company Name" },
+            new ConfigSetting { SettingKey = "Theme.SupportEmail", SettingValue = "support@dms-azie.onrender.com", Category = "THEME", DataType = "String", Description = "Global Technical Support Email" },
+            new ConfigSetting { SettingKey = "Theme.CopyrightText", SettingValue = "© 2026 Arun Rana. All rights reserved.", Category = "THEME", DataType = "String", Description = "Footer Copyright Statement" }
         };
 
         int addedCount = 0;

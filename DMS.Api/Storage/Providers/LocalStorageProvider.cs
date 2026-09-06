@@ -175,7 +175,10 @@ public class LocalStorageProvider : IStorageProvider
 
     private string GetSafePath(string relativePath)
     {
-        var combined = Path.Combine(_baseDirectory, relativePath.Replace("/", "\\"));
+        var cleanRelative = relativePath
+            .Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
+        var combined = Path.Combine(_baseDirectory, cleanRelative);
         var fullPath = Path.GetFullPath(combined);
         if (!fullPath.StartsWith(Path.GetFullPath(_baseDirectory), StringComparison.OrdinalIgnoreCase))
         {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Globe, X, CheckCircle2, AlertCircle, Pencil, Trash2, Building2 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 
 interface TenantItem {
   id: number;
@@ -19,6 +20,7 @@ interface WebhookItem {
 }
 
 export const WebhooksView: React.FC = () => {
+  const { config } = useTheme();
   const [webhooks, setWebhooks] = useState<WebhookItem[]>([]);
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -179,7 +181,7 @@ export const WebhooksView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-xs">
         <div>
           <h1 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight flex items-center gap-2">
-            <Globe className="w-5 h-5 text-blue-500" />
+            <Globe className={`w-5 h-5 ${config.theme.textHighlight}`} />
             <span>Webhooks</span>
           </h1>
         </div>
@@ -195,12 +197,12 @@ export const WebhooksView: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPageIndex(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-slate-400"
             />
           </div>
           <button
             onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Subscription</span>
@@ -231,13 +233,13 @@ export const WebhooksView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <thead className={config.theme.tableHeaderBg}>
                 <tr>
-                  {isSuperAdmin && <th className="px-4 py-2.5">Tenant</th>}
-                  <th className="px-4 py-2.5">Event Type</th>
-                  <th className="px-4 py-2.5">Endpoint URL</th>
-                  <th className="px-4 py-2.5">Status</th>
-                  <th className="px-4 py-2.5 text-right">Actions</th>
+                  {isSuperAdmin && <th className={`px-4 py-2.5 ${config.theme.tableHeaderCell}`}>Tenant</th>}
+                  <th className={`px-4 py-2.5 ${config.theme.tableHeaderCell}`}>Event Type</th>
+                  <th className={`px-4 py-2.5 ${config.theme.tableHeaderCell}`}>Endpoint URL</th>
+                  <th className={`px-4 py-2.5 ${config.theme.tableHeaderCell}`}>Status</th>
+                  <th className={`px-4 py-2.5 text-right ${config.theme.tableHeaderCell}`}>Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
@@ -250,7 +252,7 @@ export const WebhooksView: React.FC = () => {
                         </span>
                       </td>
                     )}
-                    <td className="px-4 py-2.5 font-bold text-blue-600 dark:text-blue-400 font-mono text-[11px]">{w.eventType}</td>
+                    <td className={`px-4 py-2.5 font-bold ${config.theme.textHighlight} font-mono text-[11px]`}>{w.eventType}</td>
                     <td className="px-4 py-2.5 text-[11px] font-mono text-slate-600 dark:text-slate-300">{w.endpoint}</td>
                     <td className="px-4 py-2.5">
                       <span
@@ -320,7 +322,7 @@ export const WebhooksView: React.FC = () => {
               {isSuperAdmin && !editingWebhook && tenants.length > 0 && (
                 <div>
                   <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1">
-                    <Building2 className="w-3 h-3 text-blue-600" /> Target Tenant *
+                    <Building2 className={`w-3 h-3 ${config.theme.textHighlight}`} /> Target Tenant *
                   </label>
                   <select
                     value={targetTenantId}
@@ -388,8 +390,8 @@ export const WebhooksView: React.FC = () => {
               )}
 
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
-                <button type="button" onClick={() => setIsOpen(false)} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold">Cancel</button>
-                <button type="submit" disabled={submitting} className="px-4 py-1.5 bg-blue-600 text-white font-semibold rounded-lg shadow-xs disabled:opacity-50">
+                <button type="button" onClick={() => setIsOpen(false)} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold cursor-pointer">Cancel</button>
+                <button type="submit" disabled={submitting} className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-lg shadow-xs cursor-pointer disabled:opacity-50`}>
                   {submitting ? 'Saving...' : editingWebhook ? 'Update Subscription' : 'Register Subscription'}
                 </button>
               </div>

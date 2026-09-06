@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import {
   LayoutDashboard,
   FolderTree,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
+  const { config } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('dms_sidebar_collapsed') === 'true';
   });
@@ -59,7 +61,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`border-r border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex flex-col justify-between h-screen sticky top-0 transition-all duration-300 z-30 ${
+      className={`border-r ${config.theme.sidebarBg} flex flex-col justify-between h-screen sticky top-0 transition-all duration-300 z-30 ${
         isCollapsed ? 'w-14' : 'w-56'
       }`}
     >
@@ -69,7 +71,7 @@ export const Sidebar: React.FC = () => {
           <div className="h-12 px-2 flex items-center justify-center border-b border-slate-200 dark:border-slate-800/80">
             <button
               onClick={() => setIsCollapsed(false)}
-              className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black shadow-xs hover:scale-105 active:scale-95 transition-all group relative"
+              className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs hover:scale-105 active:scale-95 transition-all group relative`}
               title="Click to Expand Sidebar"
             >
               <Layers className="w-3.5 h-3.5 group-hover:hidden" />
@@ -79,14 +81,14 @@ export const Sidebar: React.FC = () => {
         ) : (
           <div className="h-12 px-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80">
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black shadow-xs shrink-0">
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs shrink-0`}>
                 <Layers className="w-3.5 h-3.5" />
               </div>
               <div className="transition-opacity duration-200 min-w-0">
                 <div className="font-extrabold text-slate-900 dark:text-white tracking-tight leading-none text-xs truncate">
-                  <span className="text-blue-600">DMS</span>
+                  {config.appName} <span className={config.theme.textHighlight}>{config.appNameHighlight}</span>
                 </div>
-                <div className="text-[8px] font-semibold text-slate-400 dark:text-slate-500 tracking-wider uppercase mt-0.5">Managed By Arun Rana</div>
+                <div className="text-[8px] font-semibold text-slate-400 dark:text-slate-500 tracking-wider uppercase mt-0.5 truncate">{config.appSubtitle}</div>
               </div>
             </div>
 
@@ -119,7 +121,7 @@ export const Sidebar: React.FC = () => {
                     isCollapsed ? 'justify-center py-2' : ''
                   } ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 shadow-xs'
+                      ? config.theme.activeNavBg
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'
                   }`
                 }

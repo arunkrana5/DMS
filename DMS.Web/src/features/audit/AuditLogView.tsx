@@ -17,8 +17,10 @@ import {
   Layers
 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useTheme } from '../../context/ThemeContext';
 
 export const AuditLogView: React.FC = () => {
+  const { config } = useTheme();
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,8 +132,8 @@ export const AuditLogView: React.FC = () => {
         );
       case 'UPLOAD':
         return (
-          <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold rounded-lg border border-blue-200 dark:border-blue-900 inline-flex items-center gap-1 shadow-xs">
-            <Upload className="w-3.5 h-3.5 text-blue-500" />
+          <span className={`px-2.5 py-1 ${config.theme.badgeBg} font-bold rounded-lg inline-flex items-center gap-1 shadow-xs`}>
+            <Upload className="w-3.5 h-3.5" />
             <span>UPLOAD</span>
           </span>
         );
@@ -225,8 +227,8 @@ export const AuditLogView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr className="whitespace-nowrap">
+              <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                <tr className={`whitespace-nowrap ${config.theme.tableHeaderCell}`}>
                   <th className="px-4 py-3">Timestamp 🕒</th>
                   <th className="px-4 py-3">Action ⚡</th>
                   <th className="px-4 py-3">Tenant Namespace 🏢</th>
@@ -299,10 +301,10 @@ export const AuditLogView: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => setPreviewDoc({ publicId: docGuid, fileName: log.documentName || 'Document Preview' })}
-                                className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-600 dark:text-blue-400 font-bold text-[10px] rounded-lg border border-blue-200 dark:border-blue-900 inline-flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+                                className={`px-2.5 py-1 ${config.theme.badgeBg} font-bold text-[10px] rounded-lg inline-flex items-center gap-1 transition-all cursor-pointer shadow-xs`}
                                 title="View / Preview Target Document"
                               >
-                                <Eye className="w-3 h-3 text-blue-500" />
+                                <Eye className="w-3 h-3" />
                                 <span>View</span>
                               </button>
 

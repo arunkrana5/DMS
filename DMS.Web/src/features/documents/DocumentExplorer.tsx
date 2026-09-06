@@ -4,6 +4,7 @@ import api, { API_BASE_URL } from '../../services/api';
 import type { DocumentItem, FolderItem } from '../../types';
 import { Pagination } from '../../components/common/Pagination';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Folder,
   Upload,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 export const DocumentExplorer: React.FC = () => {
+  const { config } = useTheme();
   const { user } = useAuth();
   const isSuperAdmin = user?.tenantCode === 'SUPERADMIN' || user?.roles?.includes('SUPERADMIN');
   const [tenants, setTenants] = useState<any[]>([]);
@@ -365,7 +367,7 @@ export const DocumentExplorer: React.FC = () => {
       {/* Top Banner Control Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-black shadow-md shrink-0`}>
             <FileText className="w-5 h-5" />
           </div>
           <div>
@@ -386,7 +388,7 @@ export const DocumentExplorer: React.FC = () => {
 
           <button
             onClick={() => setIsUploadOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+            className={`flex items-center gap-1.5 px-4 py-1.5 ${config.theme.primaryButtonBg} text-xs rounded-xl transition-all shrink-0`}
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Upload Document</span>
@@ -395,14 +397,13 @@ export const DocumentExplorer: React.FC = () => {
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs font-bold' : 'text-slate-400'}`}
-              title="List View"
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${viewMode === 'list' ? `bg-white dark:bg-slate-700 ${config.theme.textHighlight} shadow-xs font-bold` : 'text-slate-400'}`}
             >
               <ListIcon className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-xs font-bold' : 'text-slate-400'}`}
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${viewMode === 'grid' ? `bg-white dark:bg-slate-700 ${config.theme.textHighlight} shadow-xs font-bold` : 'text-slate-400'}`}
               title="Grid View"
             >
               <Grid className="w-3.5 h-3.5" />
@@ -454,10 +455,10 @@ export const DocumentExplorer: React.FC = () => {
         ) : viewMode === 'grid' ? (
           <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {documents.map((doc) => (
-              <div key={doc.publicId} className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-2.5 hover:border-blue-500 transition-all shadow-xs flex flex-col justify-between">
+              <div key={doc.publicId} className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-2.5 hover:border-indigo-500 transition-all shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded text-[9px] font-mono font-bold uppercase">
+                    <span className={`px-2 py-0.5 ${config.theme.badgeBg} rounded text-[9px] font-mono font-bold uppercase`}>
                       {doc.extension.replace('.', '') || 'DOC'}
                     </span>
                     <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold text-[9px] rounded-md border border-indigo-200 dark:border-indigo-800">
@@ -469,7 +470,7 @@ export const DocumentExplorer: React.FC = () => {
                   </div>
                   <div
                     onClick={() => setPreviewDoc(doc)}
-                    className="font-bold text-xs text-slate-900 dark:text-white hover:text-blue-600 cursor-pointer truncate mt-2"
+                    className={`font-bold text-xs text-slate-900 dark:text-white hover:${config.theme.textHighlight} cursor-pointer truncate mt-2`}
                   >
                     {doc.fileName}
                   </div>
@@ -480,7 +481,7 @@ export const DocumentExplorer: React.FC = () => {
                   <span className="text-[10px] font-mono text-slate-400">{formatBytes(doc.fileSize)}</span>
                   {/* Action Buttons in single line */}
                   <div className="flex items-center gap-1 shrink-0">
-                    <button onClick={() => setPreviewDoc(doc)} className="p-1 text-slate-400 hover:text-blue-600 rounded" title="Preview">
+                    <button onClick={() => setPreviewDoc(doc)} className={`p-1 text-slate-400 hover:${config.theme.textHighlight} rounded`} title="Preview">
                       <Eye className="w-3.5 h-3.5" />
                     </button>
                     <button onClick={() => handleOpenEdit(doc)} className="p-1 text-slate-400 hover:text-amber-600 rounded" title="Edit">
@@ -500,8 +501,8 @@ export const DocumentExplorer: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                <tr className="whitespace-nowrap">
+              <thead className={`${config.theme.tableHeaderBg} text-[10px]`}>
+                <tr className={`whitespace-nowrap ${config.theme.tableHeaderCell}`}>
                   <th className="px-3.5 py-3">Document Name</th>
                   <th className="px-3.5 py-3">Doc Type</th>
                   <th className="px-3.5 py-3">Exact Physical Path</th>
@@ -518,13 +519,13 @@ export const DocumentExplorer: React.FC = () => {
                   <tr key={doc.publicId} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-3.5 py-2.5">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-[9px] uppercase shrink-0 border border-blue-200 dark:border-blue-900">
+                        <div className={`w-7 h-7 rounded-lg ${config.theme.badgeBg} flex items-center justify-center font-bold text-[9px] uppercase shrink-0`}>
                           {doc.extension.replace('.', '') || 'DOC'}
                         </div>
                         <div className="min-w-0">
                           <div
                             onClick={() => setPreviewDoc(doc)}
-                            className="font-bold text-slate-900 dark:text-slate-100 hover:text-blue-600 cursor-pointer truncate max-w-xs text-xs"
+                            className={`font-bold text-slate-900 dark:text-slate-100 hover:${config.theme.textHighlight} cursor-pointer truncate max-w-xs text-xs`}
                           >
                             {doc.fileName}
                           </div>
@@ -557,7 +558,7 @@ export const DocumentExplorer: React.FC = () => {
                     </td>
                     <td className="px-3.5 py-2.5 text-slate-600 dark:text-slate-400 font-mono text-[11px]">{formatBytes(doc.fileSize)}</td>
                     <td className="px-3.5 py-2.5">
-                      <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-md text-[9px] font-bold border border-blue-200 dark:border-blue-900">
+                      <span className={`px-2 py-0.5 ${config.theme.badgeBg} rounded-md text-[9px] font-bold`}>
                         v{doc.currentVersion}
                       </span>
                     </td>
@@ -568,7 +569,7 @@ export const DocumentExplorer: React.FC = () => {
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           onClick={() => setPreviewDoc(doc)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/60 rounded-lg transition-colors cursor-pointer"
+                          className={`p-1.5 text-slate-400 hover:${config.theme.textHighlight} hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer`}
                           title="Preview Document"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -620,9 +621,9 @@ export const DocumentExplorer: React.FC = () => {
       {isUploadOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="modal-animate bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden space-y-0 text-xs">
-            <div className="p-4 bg-gradient-to-r from-blue-900/40 to-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className={`p-4 ${config.theme.cardHeaderBanner} flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-md">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${config.theme.brandGradient} text-white flex items-center justify-center font-bold shadow-md`}>
                   <Upload className="w-4 h-4" />
                 </div>
                 <div>
@@ -642,7 +643,7 @@ export const DocumentExplorer: React.FC = () => {
                   type="button"
                   onClick={() => setUploadMode('table')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    uploadMode === 'table' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400'
+                    uploadMode === 'table' ? `${config.theme.primaryButtonBg} shadow-sm` : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
                   <TableIcon className="w-3.5 h-3.5" />
@@ -652,7 +653,7 @@ export const DocumentExplorer: React.FC = () => {
                   type="button"
                   onClick={() => setUploadMode('single')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    uploadMode === 'single' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400'
+                    uploadMode === 'single' ? `${config.theme.primaryButtonBg} shadow-sm` : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
                   <FileText className="w-3.5 h-3.5" />
@@ -810,7 +811,7 @@ export const DocumentExplorer: React.FC = () => {
 
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setIsUploadOpen(false)} className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold">Cancel</button>
-                      <button type="submit" disabled={uploading} className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-md cursor-pointer">
+                      <button type="submit" disabled={uploading} className={`px-5 py-2 ${config.theme.primaryButtonBg} rounded-xl`}>
                         {uploading ? 'Uploading Batch...' : 'Submit Batch Upload'}
                       </button>
                     </div>
@@ -842,7 +843,7 @@ export const DocumentExplorer: React.FC = () => {
 
                   <div className="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onClick={() => setIsUploadOpen(false)} className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold">Cancel</button>
-                    <button type="submit" disabled={uploading} className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-md cursor-pointer">
+                    <button type="submit" disabled={uploading} className={`px-5 py-2 ${config.theme.primaryButtonBg} rounded-xl`}>
                       {uploading ? 'Uploading...' : 'Upload File'}
                     </button>
                   </div>
@@ -942,7 +943,7 @@ export const DocumentExplorer: React.FC = () => {
 
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
                 <button type="button" onClick={() => setIsCreateFolderOpen(false)} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl font-semibold cursor-pointer">Cancel</button>
-                <button type="submit" className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-xs cursor-pointer">
+                <button type="submit" className={`px-4 py-1.5 ${config.theme.primaryButtonBg} rounded-xl`}>
                   {editingFolder ? 'Update Folder' : 'Create Folder'}
                 </button>
               </div>
