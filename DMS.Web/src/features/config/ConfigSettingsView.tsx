@@ -484,6 +484,7 @@ export const ConfigSettingsView: React.FC = () => {
                     className="w-full px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="FIREBASE">FIREBASE</option>
+                    <option value="THEME">THEME</option>
                     <option value="SMTP">SMTP</option>
                     <option value="STORAGE">STORAGE</option>
                     <option value="SECURITY">SECURITY</option>
