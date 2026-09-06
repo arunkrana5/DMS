@@ -160,7 +160,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           ...prev,
           appName: dbTheme['Theme.AppName'] || prev.appName,
           appNameHighlight: dbTheme['Theme.AppNameHighlight'] || prev.appNameHighlight,
-          appSubtitle: dbTheme['Tenant.Name'] ? `Tenant: ${dbTheme['Tenant.Name']}` : (dbTheme['Theme.AppSubtitle'] || prev.appSubtitle),
+          appSubtitle: dbTheme['Tenant.Name'] ? ` ${dbTheme['Tenant.Name']}` : (dbTheme['Theme.AppSubtitle'] || prev.appSubtitle),
           companyName: dbTheme['Company.Name'] || dbTheme['Theme.CompanyName'] || prev.companyName,
           supportEmail: dbTheme['Theme.SupportEmail'] || prev.supportEmail,
           copyrightText: dbTheme['Theme.CopyrightText'] || prev.copyrightText,
