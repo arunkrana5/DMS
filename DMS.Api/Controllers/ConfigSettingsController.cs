@@ -118,6 +118,14 @@ public class ConfigSettingsController : ControllerBase
 
             if (tenant != null)
             {
+                // Set tenant default color from Tenants table first
+                if (!string.IsNullOrWhiteSpace(tenant.PrimaryColor))
+                {
+                    globalSettings["Theme.PrimaryColorHex"] = tenant.PrimaryColor;
+                    globalSettings["Theme.PrimaryColorName"] = tenant.PrimaryColor;
+                }
+
+                // Merge tenant-specific ConfigSettings (overrides tenant.PrimaryColor if explicitly defined)
                 var tenantSettings = await _dbContext.ConfigSettings
                     .AsNoTracking()
                     .Where(c => c.Category == "THEME" && c.TenantId == tenant.Id && c.IsActive)
@@ -128,10 +136,9 @@ public class ConfigSettingsController : ControllerBase
                     globalSettings[ts.SettingKey] = ts.SettingValue ?? "";
                 }
 
-                if (!string.IsNullOrWhiteSpace(tenant.PrimaryColor))
+                if (globalSettings.TryGetValue("Theme.PrimaryColorHex", out var primaryHex) && !string.IsNullOrWhiteSpace(primaryHex))
                 {
-                    globalSettings["Theme.PrimaryColorHex"] = tenant.PrimaryColor;
-                    globalSettings["Theme.PrimaryColorName"] = tenant.PrimaryColor;
+                    globalSettings["Theme.PrimaryColorName"] = primaryHex;
                 }
 
                 globalSettings["Tenant.Code"] = tenant.TenantCode;

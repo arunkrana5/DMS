@@ -20,17 +20,26 @@ function getGradientForHex(hexInput: string): string {
   const hex = hexInput.trim().toLowerCase();
 
   // Explicit color name or known hex matches
-  if (hex.includes('red') || hex.includes('dc2626') || hex.includes('ef4444') || hex.includes('b91c1c') || hex.includes('rose')) {
+  if (hex.includes('pink') || hex.includes('rose') || hex.includes('magenta') || hex.includes('fuchsia') || hex.includes('93387a') || hex.includes('ec4899') || hex.includes('db2777') || hex.includes('d946ef') || hex.includes('c026d3')) {
+    return 'from-fuchsia-600 to-pink-600';
+  }
+  if (hex.includes('red') || hex.includes('dc2626') || hex.includes('ef4444') || hex.includes('b91c1c')) {
     return 'from-red-600 to-rose-600';
   }
-  if (hex.includes('green') || hex.includes('emerald') || hex.includes('059669') || hex.includes('10b981') || hex.includes('teal')) {
+  if (hex.includes('green') || hex.includes('emerald') || hex.includes('059669') || hex.includes('10b981')) {
     return 'from-emerald-600 to-teal-600';
+  }
+  if (hex.includes('teal') || hex.includes('cyan') || hex.includes('06b6d4') || hex.includes('0d9488')) {
+    return 'from-cyan-600 to-teal-600';
   }
   if (hex.includes('purple') || hex.includes('violet') || hex.includes('7c3aed') || hex.includes('8b5cf6')) {
     return 'from-violet-600 to-purple-600';
   }
   if (hex.includes('amber') || hex.includes('orange') || hex.includes('d97706') || hex.includes('f59e0b')) {
     return 'from-amber-600 to-orange-600';
+  }
+  if (hex.includes('indigo') || hex.includes('4f46e5') || hex.includes('6366f1')) {
+    return 'from-indigo-600 to-purple-600';
   }
 
   // Parse custom #rrggbb
@@ -41,14 +50,18 @@ function getGradientForHex(hexInput: string): string {
       const g = parseInt(cleanHex.substring(2, 4), 16);
       const b = parseInt(cleanHex.substring(4, 6), 16);
 
-      // Violet / Purple: both R and B are significantly higher than G
-      if (r > g + 20 && b > g + 20) return 'from-violet-600 to-purple-600';
+      // Pink / Magenta / Fuchsia: R and B are high, G is low (e.g. #93387a: R=147, G=56, B=122)
+      if (r > g + 25 && b > g + 25 && Math.abs(r - b) < 70) return 'from-fuchsia-600 to-pink-600';
       // Red: R is significantly higher than G and B
       if (r > g + 30 && r > b + 30) return 'from-red-600 to-rose-600';
+      // Violet / Purple: B is significantly higher than R and G
+      if (b > r + 30 && b > g + 30) return 'from-violet-600 to-purple-600';
       // Emerald: G is significantly higher than R and B
       if (g > r + 30 && g > b + 30) return 'from-emerald-600 to-teal-600';
       // Amber: R is high, G is medium, B is low
       if (r > b + 30 && g > b + 20) return 'from-amber-600 to-orange-600';
+      // Cyan / Teal: G and B are high, R is low
+      if (g > r + 25 && b > r + 25) return 'from-cyan-600 to-teal-600';
       // Blue: B is significantly higher than R and G
       if (b > r + 20 && b > g + 20) return 'from-blue-600 to-indigo-600';
     }
@@ -60,6 +73,18 @@ function getGradientForHex(hexInput: string): string {
 function getThemeStylesForColor(hexInput: string) {
   const gradient = getGradientForHex(hexInput);
 
+  if (gradient.includes('fuchsia') || gradient.includes('pink')) {
+    return {
+      brandGradient: 'from-fuchsia-600 to-pink-600',
+      activeNavBg: 'bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border border-pink-200/60 dark:border-pink-900/60 shadow-xs font-bold',
+      primaryButtonBg: 'bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500 text-white font-bold shadow-md cursor-pointer',
+      badgeBg: 'bg-pink-50 text-pink-600 dark:bg-pink-950/60 dark:text-pink-400 font-mono font-bold border border-pink-200 dark:border-pink-800',
+      textHighlight: 'text-pink-600 dark:text-pink-400',
+      tableHeaderBg: 'bg-pink-50/80 dark:bg-pink-950/60 text-pink-900 dark:text-pink-200 border-b border-pink-200/80 dark:border-pink-900/60',
+      tableHeaderCell: 'text-pink-700 dark:text-pink-300 font-black uppercase tracking-wider',
+      cardHeaderBanner: 'bg-gradient-to-r from-fuchsia-900/40 via-pink-900/30 to-slate-900/20 border-b border-pink-200/40 dark:border-pink-900/40'
+    };
+  }
   if (gradient.includes('red')) {
     return {
       brandGradient: 'from-red-600 to-rose-600',
@@ -72,7 +97,7 @@ function getThemeStylesForColor(hexInput: string) {
       cardHeaderBanner: 'bg-gradient-to-r from-red-900/40 via-rose-900/30 to-slate-900/20 border-b border-red-200/40 dark:border-red-900/40'
     };
   }
-  if (gradient.includes('emerald')) {
+  if (gradient.includes('emerald') || gradient.includes('cyan')) {
     return {
       brandGradient: 'from-emerald-600 to-teal-600',
       activeNavBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/60 shadow-xs font-bold',

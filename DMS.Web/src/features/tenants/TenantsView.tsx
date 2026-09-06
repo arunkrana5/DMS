@@ -468,7 +468,8 @@ export const TenantsView: React.FC = () => {
                     { name: 'Emerald', hex: '#059669' },
                     { name: 'Violet', hex: '#7c3aed' },
                     { name: 'Amber', hex: '#d97706' },
-                    { name: 'Indigo', hex: '#4f46e5' }
+                    { name: 'Indigo', hex: '#4f46e5' },
+                    { name: 'Magenta', hex: '#93387a' }
                   ].map((color) => (
                     <button
                       key={color.hex}
