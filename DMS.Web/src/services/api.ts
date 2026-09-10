@@ -32,8 +32,12 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('dms_token');
+  const tenantCode = localStorage.getItem('dms_tenant');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (tenantCode) {
+    config.headers['X-Tenant-Code'] = tenantCode;
   }
   return config;
 });
@@ -44,7 +48,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('dms_token');
       localStorage.removeItem('dms_user');
-      if (window.location.pathname !== '/login') {
+      localStorage.removeItem('dms_tenant');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
     }

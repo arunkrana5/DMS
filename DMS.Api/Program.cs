@@ -80,6 +80,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
         IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
         {
             if (appScopeProvider == null)
@@ -98,7 +99,12 @@ builder.Services.AddAuthentication(options =>
                 throw new InvalidOperationException("Jwt.SecretKey is missing or inactive in ConfigSettings database table.");
             }
 
-            return new[] { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(dbSetting.SettingValue)) };
+            var rawBytes = Encoding.UTF8.GetBytes(dbSetting.SettingValue);
+            byte[] keyBytes = rawBytes.Length >= 32
+                ? rawBytes
+                : System.Security.Cryptography.SHA256.HashData(rawBytes);
+
+            return new[] { new SymmetricSecurityKey(keyBytes) };
         }
     };
 });
@@ -153,10 +159,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DMS API v1"));
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseCors("AllowAll");
 app.UseMiddleware<TenantResolverMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// SPA Routing Fallback: Redirect all non-API and non-file requests to index.html for React BrowserRouter
+app.MapFallbackToFile("index.html");
 
 app.Run();

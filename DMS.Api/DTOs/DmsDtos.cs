@@ -464,3 +464,51 @@ public class ConfigureModuleDocumentTypeRequest
     public int MaxAllowedFiles { get; set; } = 10;
     public int DisplayOrder { get; set; } = 0;
 }
+
+public class ReleaseLogDto
+{
+    public int Id { get; set; }
+    public Guid PublicId { get; set; }
+    public string Version { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
+    public string Category { get; set; } = "FEATURE";
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? AiGeneratedSummary { get; set; }
+    public DateTime CreatedDate { get; set; }
+}
+
+public class CreateReleaseLogRequest
+{
+    public string Version { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
+    public string Category { get; set; } = "FEATURE";
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? AiGeneratedSummary { get; set; }
+}
+
+public class UpdateReleaseLogRequest
+{
+    public string Version { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
+    public string Category { get; set; } = "FEATURE";
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? AiGeneratedSummary { get; set; }
+}
+
+public class GenerateAiDescriptionRequest
+{
+    public string Version { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Category { get; set; } = "FEATURE";
+    public string Highlights { get; set; } = string.Empty;
+    public string? ApiKey { get; set; }
+    public string? ProviderUrl { get; set; }
+}
+
+public class GenerateAiDescriptionResponse
+{
+    public string GeneratedDescription { get; set; } = string.Empty;
+}

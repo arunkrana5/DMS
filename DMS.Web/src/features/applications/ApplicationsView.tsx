@@ -17,11 +17,15 @@ import {
   Building2,
   Pencil
 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 import { Pagination } from '../../components/common/Pagination';
 import { useTheme } from '../../context/ThemeContext';
 
 export const ApplicationsView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [apps, setApps] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [routingRules, setRoutingRules] = useState<any[]>([]);
@@ -32,6 +36,12 @@ export const ApplicationsView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // Visible Tokens & Copied States
   const [visibleTokens, setVisibleTokens] = useState<Record<number, boolean>>({});
@@ -222,7 +232,7 @@ export const ApplicationsView: React.FC = () => {
               placeholder="Search app name, code or tenant..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
             />
           </div>
           <button

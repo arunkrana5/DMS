@@ -568,8 +568,19 @@ public class DocumentService : IDocumentService
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            var term = request.SearchTerm.Trim();
-            query = query.Where(d => d.FileName.Contains(term) || (d.Description != null && d.Description.Contains(term)));
+            var term = request.SearchTerm.Trim().ToLower();
+            bool isGuid = Guid.TryParse(term, out var searchGuid);
+
+            query = query.Where(d =>
+                d.FileName.ToLower().Contains(term) ||
+                (d.OriginalFileName != null && d.OriginalFileName.ToLower().Contains(term)) ||
+                (d.Description != null && d.Description.ToLower().Contains(term)) ||
+                (d.ModuleCode != null && d.ModuleCode.ToLower().Contains(term)) ||
+                (d.EntityType != null && d.EntityType.ToLower().Contains(term)) ||
+                (d.EntityId != null && d.EntityId.ToLower().Contains(term)) ||
+                (d.Extension != null && d.Extension.ToLower().Contains(term)) ||
+                (d.DocumentType != null && (d.DocumentType.Name.ToLower().Contains(term) || d.DocumentType.Code.ToLower().Contains(term))) ||
+                (isGuid && d.PublicId == searchGuid));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);

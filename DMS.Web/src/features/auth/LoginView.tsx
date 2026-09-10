@@ -85,7 +85,7 @@ export const LoginView: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 placeholder="Enter Username or Email"
-                className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 text-white rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 text-white rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
               />
             </div>
           </div>
@@ -102,7 +102,7 @@ export const LoginView: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Enter Password"
-                className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 text-white rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 text-white rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
               />
             </div>
           </div>

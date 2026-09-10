@@ -12,6 +12,7 @@ import {
   AlertCircle,
   X
 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 import { Pagination } from '../../components/common/Pagination';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -38,6 +39,9 @@ interface RoleItem {
 
 export const RolesView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [permissions, setPermissions] = useState<PermissionItem[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
@@ -47,6 +51,12 @@ export const RolesView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // Modal state
   const [isOpen, setIsOpen] = useState(false);
@@ -396,7 +406,7 @@ export const RolesView: React.FC = () => {
                     placeholder="Enter Role Code"
                     value={roleCode}
                     onChange={(e) => setRoleCode(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-indigo-500 disabled:opacity-60"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] disabled:opacity-60"
                   />
                 </div>
 
@@ -410,7 +420,7 @@ export const RolesView: React.FC = () => {
                     placeholder="Enter Role Display Name"
                     value={roleName}
                     onChange={(e) => setRoleName(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)]"
                   />
                 </div>
               </div>
@@ -423,7 +433,7 @@ export const RolesView: React.FC = () => {
                   <select
                     value={targetTenantId}
                     onChange={(e) => setTargetTenantId(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)]"
                   >
                     <option value="">Current Tenant Default</option>
                     {tenants.map((t) => (
@@ -444,7 +454,7 @@ export const RolesView: React.FC = () => {
                   placeholder="Operational role duties..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)]"
                 />
               </div>
 
@@ -490,7 +500,7 @@ export const RolesView: React.FC = () => {
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleTogglePermission(p.id)}
-                                  className="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                  className="mt-0.5 rounded accent-[var(--tenant-primary)] cursor-pointer"
                                 />
                                 <div>
                                   <div className="font-bold text-xs leading-tight">{p.permissionName}</div>
@@ -512,7 +522,7 @@ export const RolesView: React.FC = () => {
                     type="checkbox"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
-                    className="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                    className="rounded accent-[var(--tenant-primary)] cursor-pointer"
                   />
                   <span className="font-bold text-xs text-slate-700 dark:text-slate-300">Active Status</span>
                 </label>

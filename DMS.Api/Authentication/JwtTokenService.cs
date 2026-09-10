@@ -29,11 +29,20 @@ public class JwtTokenService
         var audience = await _configService.GetSettingAsync<string>("Jwt.Audience", tenant.Id, app?.Id, "DMS.Clients", cancellationToken) ?? "DMS.Clients";
         var expiryMinutes = await _configService.GetSettingAsync<int>("Jwt.ExpiryMinutes", tenant.Id, app?.Id, 480, cancellationToken);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        var rawBytes = Encoding.UTF8.GetBytes(secretKey);
+        byte[] keyBytes = rawBytes.Length >= 32
+            ? rawBytes
+            : System.Security.Cryptography.SHA256.HashData(rawBytes);
+
+        var key = new SymmetricSecurityKey(keyBytes);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var now = DateTime.UtcNow;
         var claims = new List<Claim>
         {
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new("user_public_id", user.PublicId.ToString()),
             new(ClaimTypes.Name, user.Username),
@@ -65,11 +74,14 @@ public class JwtTokenService
             }
         }
 
+        var expires = now.AddMinutes(expiryMinutes > 0 ? expiryMinutes : 480);
+
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expiryMinutes > 0 ? expiryMinutes : 480),
+            notBefore: now,
+            expires: expires,
             signingCredentials: creds
         );
 

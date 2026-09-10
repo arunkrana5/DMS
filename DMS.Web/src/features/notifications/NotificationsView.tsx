@@ -18,6 +18,7 @@ import {
   Smartphone,
   X
 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 import { Pagination } from '../../components/common/Pagination';
 
 export const formatNotificationTime = (dateStr: string) => {
@@ -42,6 +43,9 @@ export const formatNotificationTime = (dateStr: string) => {
 
 export const NotificationsView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,10 +60,16 @@ export const NotificationsView: React.FC = () => {
   const [previewDocPublicId, setPreviewDocPublicId] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>('');
 
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
+
   const fetchNotifications = async (showLoadingSpinner = false) => {
     if (showLoadingSpinner) setLoading(true);
     try {
-      const res = await api.get(`/notifications?pageIndex=${pageIndex}&pageSize=${pageSize}`);
+      const res = await api.get(`/notifications?pageIndex=${pageIndex}&pageSize=${pageSize}&search=${encodeURIComponent(searchQuery)}`);
       if (res.data?.success) {
         const items = res.data.data.items || [];
         setNotifications(items);

@@ -17,10 +17,14 @@ import {
   Layers
 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
+import { useOutletContext } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 
 export const AuditLogView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +34,12 @@ export const AuditLogView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // Preview Modal State
   const [previewDoc, setPreviewDoc] = useState<{ publicId: string; fileName: string } | null>(null);

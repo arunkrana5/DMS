@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import api from '../../services/api';
 import { useTheme } from '../../context/ThemeContext';
 import { Building2, Plus, Search, Users, CheckCircle2, AlertCircle, X, ShieldCheck, Pencil, Trash2 } from 'lucide-react';
@@ -31,6 +32,9 @@ interface UserItem {
 
 export const TenantsView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +42,12 @@ export const TenantsView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // Selected Tenant Users Drawer/Modal
   const [selectedTenant, setSelectedTenant] = useState<TenantItem | null>(null);
@@ -269,7 +279,7 @@ export const TenantsView: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPageIndex(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
             />
           </div>
 
@@ -429,7 +439,7 @@ export const TenantsView: React.FC = () => {
                     placeholder="Enter Tenant Code"
                     value={tenantCode}
                     onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
-                    className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-mono text-xs uppercase font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-60"
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-mono text-xs uppercase font-bold focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all disabled:opacity-60"
                   />
                 </div>
 
@@ -441,7 +451,7 @@ export const TenantsView: React.FC = () => {
                     placeholder="Enter Organization Name"
                     value={tenantName}
                     onChange={(e) => setTenantName(e.target.value)}
-                    className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
                   />
                 </div>
               </div>
@@ -453,7 +463,7 @@ export const TenantsView: React.FC = () => {
                   placeholder="admin@thrivera.co"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
                 />
               </div>
 
@@ -528,7 +538,7 @@ export const TenantsView: React.FC = () => {
                   placeholder="Enter Tenant Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-[var(--tenant-ring-color)] focus:border-[var(--tenant-primary)] transition-all"
                 />
               </div>
 

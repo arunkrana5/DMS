@@ -1,3 +1,4 @@
+using DMS.Api.Authentication;
 using DMS.Api.Authorization;
 using DMS.Api.Common;
 using DMS.Api.Data;
@@ -112,7 +113,7 @@ public class TenantsController : ControllerBase
             TenantId = tenant.Id,
             Username = string.IsNullOrWhiteSpace(request.AdminUsername) ? "admin" : request.AdminUsername.Trim(),
             Email = request.ContactEmail ?? $"admin@{code.ToLower()}.com",
-            PasswordHash = string.IsNullOrWhiteSpace(request.AdminPassword) ? "Password123!" : request.AdminPassword,
+            PasswordHash = PasswordSecurityService.HashPassword(string.IsNullOrWhiteSpace(request.AdminPassword) ? "Password123!" : request.AdminPassword),
             FullName = request.TenantName + " Admin",
             RoleId = role.Id,
             IsActive = true,
@@ -129,7 +130,6 @@ public class TenantsController : ControllerBase
             IsDefault = true,
             IsActive = true,
             ConfigurationJsonEncrypted = "{}",
-            CreatedBy = 1,
             CreatedDate = DateTime.UtcNow
         };
         _dbContext.StorageProfiles.Add(storageProfile);
@@ -215,7 +215,7 @@ public class TenantsController : ControllerBase
             TenantId = tenantId,
             Username = username,
             Email = request.Email ?? $"{username}@{tenant.TenantCode.ToLower()}.com",
-            PasswordHash = request.Password,
+            PasswordHash = PasswordSecurityService.HashPassword(request.Password),
             FullName = request.FullName ?? username,
             RoleId = role.Id,
             IsActive = true,

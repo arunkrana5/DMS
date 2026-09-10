@@ -16,7 +16,8 @@ import {
   ChevronRight,
   Building2,
   BookOpen,
-  Bell
+  Bell,
+  Sparkles
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -42,6 +43,7 @@ export const Sidebar: React.FC = () => {
     { label: 'Tenants & Users', path: '/tenants', icon: Building2, requiredPermission: 'MANAGE_TENANTS' },
     { label: 'Roles & Permissions', path: '/roles', icon: ShieldCheck, requiredPermission: 'MANAGE_ROLES' },
     { label: 'API Manual', path: '/api-manual', icon: BookOpen },
+    { label: 'Release Notes', path: '/release-notes', icon: Sparkles },
     { label: 'Notifications', path: '/notifications', icon: Bell },
     { label: 'Document Explorer', path: '/documents', icon: FolderTree, requiredPermission: 'DOCUMENT_VIEW' },
     { label: 'Storage Profiles', path: '/storage', icon: HardDrive, requiredPermission: 'MANAGE_STORAGE_PROFILES' },
@@ -71,18 +73,26 @@ export const Sidebar: React.FC = () => {
           <div className="h-12 px-2 flex items-center justify-center border-b border-slate-200 dark:border-slate-800/80">
             <button
               onClick={() => setIsCollapsed(false)}
-              className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs hover:scale-105 active:scale-95 transition-all group relative`}
+              className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs hover:scale-105 active:scale-95 transition-all group relative overflow-hidden`}
               title="Click to Expand Sidebar"
             >
-              <Layers className="w-3.5 h-3.5 group-hover:hidden" />
+              {config.logoUrl ? (
+                <img src={config.logoUrl} alt="Logo" className="w-full h-full object-cover group-hover:hidden" />
+              ) : (
+                <Layers className="w-3.5 h-3.5 group-hover:hidden" />
+              )}
               <ChevronRight className="w-3.5 h-3.5 hidden group-hover:block text-white" />
             </button>
           </div>
         ) : (
           <div className="h-12 px-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80">
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs shrink-0`}>
-                <Layers className="w-3.5 h-3.5" />
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${config.theme.brandGradient} flex items-center justify-center text-white font-black shadow-xs shrink-0 overflow-hidden`}>
+                {config.logoUrl ? (
+                  <img src={config.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Layers className="w-3.5 h-3.5" />
+                )}
               </div>
               <div className="transition-opacity duration-200 min-w-0">
                 <div className="font-extrabold text-slate-900 dark:text-white tracking-tight leading-none text-xs truncate">

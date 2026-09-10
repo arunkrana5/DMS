@@ -39,6 +39,7 @@ public class DmsDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<TenantModule> TenantModules => Set<TenantModule>();
     public DbSet<ModuleDocumentType> ModuleDocumentTypes => Set<ModuleDocumentType>();
+    public DbSet<ReleaseLog> ReleaseLogs => Set<ReleaseLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

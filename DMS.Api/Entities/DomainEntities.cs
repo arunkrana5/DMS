@@ -567,3 +567,23 @@ public class Notification : BaseEntity
     [MaxLength(50)]
     public string Status { get; set; } = "Sent"; // Sent, Failed, Pending
 }
+
+public class ReleaseLog : BaseEntity
+{
+    [Required, MaxLength(50)]
+    public string Version { get; set; } = string.Empty;
+
+    [Required, MaxLength(100)]
+    public string ReleaseDate { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string Category { get; set; } = "FEATURE"; // SECURITY, BRANDING, SEARCH, STORAGE, INFRASTRUCTURE, BUGFIX
+
+    [Required, MaxLength(200)]
+    public string Title { get; set; } = string.Empty;
+
+    [Required]
+    public string Description { get; set; } = string.Empty;
+
+    public string? AiGeneratedSummary { get; set; }
+}

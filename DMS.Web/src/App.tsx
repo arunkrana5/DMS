@@ -17,6 +17,7 @@ import { ApiManualView } from './features/api-manual/ApiManualView';
 import { NotificationsView } from './features/notifications/NotificationsView';
 import { RolesView } from './features/roles/RolesView';
 import { ModulesView } from './features/modules/ModulesView';
+import { ReleaseNotesView } from './features/release-notes/ReleaseNotesView';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
               <Route path="tenants" element={<TenantsView />} />
               <Route path="roles" element={<RolesView />} />
               <Route path="api-manual" element={<ApiManualView />} />
+              <Route path="release-notes" element={<ReleaseNotesView />} />
               <Route path="documents" element={<DocumentExplorer />} />
               <Route path="notifications" element={<NotificationsView />} />
               <Route path="storage" element={<StorageManagement />} />

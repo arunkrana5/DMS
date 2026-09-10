@@ -116,14 +116,19 @@ public class AuthController : ControllerBase
             return Unauthorized(ApiResponse.Fail(ErrorCodes.Unauthorized, "Invalid username/email or password."));
         }
 
-        // Validate password (plain match or fallback for demo admin accounts)
-        var isValidPassword = string.Equals(user.PasswordHash, passwordInput, StringComparison.Ordinal)
-            || passwordInput == "AdminPassword123!"
-            || passwordInput == "admin";
+        // Validate password using cryptographically secure PasswordSecurityService (supports automatic PBKDF2 rehash upgrade)
+        var isValidPassword = PasswordSecurityService.VerifyPassword(user.PasswordHash, passwordInput, out var needsRehash);
 
         if (!isValidPassword)
         {
             return Unauthorized(ApiResponse.Fail(ErrorCodes.Unauthorized, "Invalid password provided."));
+        }
+
+        if (needsRehash)
+        {
+            user.PasswordHash = PasswordSecurityService.HashPassword(passwordInput);
+            user.ModifiedDate = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
         }
 
         var roles = user.Role != null ? new List<string> { user.Role.RoleCode } : new List<string> { "User" };

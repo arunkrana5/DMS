@@ -64,6 +64,23 @@ export const ConfigSettingsView: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [targetTenantId, setTargetTenantId] = useState<number | ''>('');
+
+  const userStr = localStorage.getItem('dms_user');
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const isSuperAdmin = currentUser?.roles?.includes('SUPERADMIN') || currentUser?.tenantCode === 'SUPERADMIN';
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      api.get('/tenants?pageSize=100').then((res) => {
+        if (res.data?.success) {
+          setTenants(res.data.data.items || []);
+        }
+      }).catch(console.error);
+    }
+  }, [isSuperAdmin]);
+
   const fetchSettings = async () => {
     setLoading(true);
     setError(null);
@@ -97,6 +114,7 @@ export const ConfigSettingsView: React.FC = () => {
     setDataType('String');
     setDescription('');
     setIsTenantSpecific(true);
+    setTargetTenantId('');
     setIsModalOpen(true);
   };
 
@@ -108,6 +126,7 @@ export const ConfigSettingsView: React.FC = () => {
     setDataType(item.dataType || 'String');
     setDescription(item.description || '');
     setIsTenantSpecific(item.tenantId !== null);
+    setTargetTenantId(item.tenantId !== null ? item.tenantId : '');
     setIsModalOpen(true);
   };
 
@@ -121,7 +140,8 @@ export const ConfigSettingsView: React.FC = () => {
         category,
         dataType,
         description,
-        isTenantSpecific
+        isTenantSpecific: isTenantSpecific || targetTenantId !== '',
+        tenantId: targetTenantId !== '' ? Number(targetTenantId) : 0
       };
 
       let res;
@@ -160,6 +180,7 @@ export const ConfigSettingsView: React.FC = () => {
 
   const categories = [
     { code: 'ALL', label: 'All', icon: Sliders },
+    { code: 'AI', label: 'AI Engine', icon: Sparkles },
     { code: 'THEME', label: 'Theme & Branding', icon: Sparkles },
     { code: 'FIREBASE', label: 'Firebase Push', icon: Bell },
     { code: 'SMTP', label: 'SMTP Email', icon: Mail },
@@ -181,6 +202,8 @@ export const ConfigSettingsView: React.FC = () => {
 
   const getCategoryBadgeColor = (cat: string) => {
     switch (cat.toUpperCase()) {
+      case 'AI':
+        return 'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800';
       case 'THEME':
         return 'bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800';
       case 'FIREBASE':
@@ -483,6 +506,7 @@ export const ConfigSettingsView: React.FC = () => {
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
+                    <option value="AI">AI</option>
                     <option value="FIREBASE">FIREBASE</option>
                     <option value="THEME">THEME</option>
                     <option value="SMTP">SMTP</option>
@@ -511,6 +535,26 @@ export const ConfigSettingsView: React.FC = () => {
                   </select>
                 </div>
               </div>
+
+              {isSuperAdmin && (
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                    Assign To Tenant (Client)
+                  </label>
+                  <select
+                    value={targetTenantId}
+                    onChange={(e) => setTargetTenantId(e.target.value ? Number(e.target.value) : '')}
+                    className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
+                  >
+                    <option value="">Global System Default (All Clients)</option>
+                    {tenants.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.tenantCode} — {t.tenantName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">

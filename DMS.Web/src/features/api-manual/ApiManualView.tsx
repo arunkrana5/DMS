@@ -71,7 +71,7 @@ export const ApiManualView: React.FC = () => {
   const superAdminContent = `# 🛡️ SuperAdmin Platform Operating Manual
 
 ## 1. Platform Architectural Overview
-Antigravity DMS is an Enterprise Multi-Tenant Document Management Platform designed for scale, isolation, and dynamic storage provider routing.
+${config.appName} ${config.appNameHighlight} is an Enterprise Multi-Tenant Document Management Platform designed for scale, isolation, and dynamic storage provider routing.
 
 ## 2. SuperAdmin Standard Operating Procedure (SOP): New Client Onboarding Workflow
 Step 1: Provision Enterprise Tenant (/tenants)

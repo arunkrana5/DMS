@@ -27,6 +27,7 @@ public class NotificationsController : ControllerBase
         [FromQuery] int pageIndex = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] bool? unreadOnly = null,
+        [FromQuery] string? search = null,
         CancellationToken cancellationToken = default)
     {
         var tenantId = _tenantContext.TenantId;
@@ -39,6 +40,12 @@ public class NotificationsController : ControllerBase
         if (unreadOnly == true)
         {
             query = query.Where(n => !n.IsRead);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim().ToLower();
+            query = query.Where(n => n.Title.ToLower().Contains(s) || n.Message.ToLower().Contains(s) || (n.NotificationType != null && n.NotificationType.ToLower().Contains(s)));
         }
 
         var total = await query.CountAsync(cancellationToken);

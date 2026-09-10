@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import api from '../../services/api';
 import { Search, Plus, Globe, X, CheckCircle2, AlertCircle, Pencil, Trash2, Building2 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
@@ -21,6 +22,9 @@ interface WebhookItem {
 
 export const WebhooksView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [webhooks, setWebhooks] = useState<WebhookItem[]>([]);
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +33,12 @@ export const WebhooksView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // SuperAdmin detection
   const userStr = localStorage.getItem('dms_user');

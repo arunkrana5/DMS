@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import api from '../../services/api';
 import { FileCode, Search, Plus, X, CheckCircle2, AlertCircle, Building2, Pencil, Trash2 } from 'lucide-react';
 import { Pagination } from '../../components/common/Pagination';
@@ -25,6 +26,9 @@ interface DocumentTypeItem {
 
 export const DocumentTypesView: React.FC = () => {
   const { config } = useTheme();
+  const outletContext = useOutletContext<{ searchTerm?: string }>();
+  const globalSearch = outletContext?.searchTerm;
+
   const [types, setTypes] = useState<DocumentTypeItem[]>([]);
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +37,12 @@ export const DocumentTypesView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (globalSearch !== undefined) {
+      setSearchQuery(globalSearch);
+    }
+  }, [globalSearch]);
 
   // Modules List for Dropdown
   const [modules, setModules] = useState<any[]>([]);

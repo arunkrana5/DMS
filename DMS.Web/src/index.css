@@ -39,3 +39,125 @@
 .modal-animate {
   animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Dynamic Tenant Brand Theme System */
+:root {
+  --tenant-primary: #2563eb;
+  --tenant-primary-rgb: 37, 99, 235;
+  --tenant-primary-hover: #1d4ed8;
+  --tenant-gradient-start: #2563eb;
+  --tenant-gradient-end: #4f46e5;
+  --tenant-primary-light-bg: rgba(37, 99, 235, 0.08);
+  --tenant-primary-dark-bg: rgba(37, 99, 235, 0.22);
+  --tenant-primary-light-border: rgba(37, 99, 235, 0.25);
+  --tenant-primary-dark-border: rgba(37, 99, 235, 0.45);
+  --tenant-primary-text: #2563eb;
+  --tenant-ring-color: rgba(37, 99, 235, 0.25);
+}
+
+.bg-tenant-primary {
+  background-color: var(--tenant-primary) !important;
+}
+
+.bg-tenant-primary-hover:hover {
+  background-color: var(--tenant-primary-hover) !important;
+}
+
+.text-tenant-primary {
+  color: var(--tenant-primary) !important;
+}
+
+.border-tenant-primary {
+  border-color: var(--tenant-primary) !important;
+}
+
+.bg-tenant-gradient {
+  background-image: linear-gradient(to right, var(--tenant-gradient-start), var(--tenant-gradient-end)) !important;
+}
+
+.bg-tenant-light {
+  background-color: var(--tenant-primary-light-bg) !important;
+}
+
+.dark .bg-tenant-light {
+  background-color: var(--tenant-primary-dark-bg) !important;
+}
+
+.border-tenant-light {
+  border-color: var(--tenant-primary-light-border) !important;
+}
+
+.dark .border-tenant-light {
+  border-color: var(--tenant-primary-dark-border) !important;
+}
+
+.btn-tenant-primary {
+  background-image: linear-gradient(to right, var(--tenant-gradient-start), var(--tenant-gradient-end)) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(var(--tenant-primary-rgb), 0.25) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.btn-tenant-primary:hover {
+  filter: brightness(1.1) !important;
+  box-shadow: 0 6px 16px rgba(var(--tenant-primary-rgb), 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+.badge-tenant-primary {
+  background-color: var(--tenant-primary-light-bg) !important;
+  color: var(--tenant-primary) !important;
+  border: 1px solid var(--tenant-primary-light-border) !important;
+  font-family: var(--font-mono) !important;
+  font-weight: 700 !important;
+}
+
+.dark .badge-tenant-primary {
+  background-color: var(--tenant-primary-dark-bg) !important;
+  color: #ffffff !important;
+  border-color: var(--tenant-primary-dark-border) !important;
+}
+
+.active-nav-tenant {
+  background-color: var(--tenant-primary-light-bg) !important;
+  color: var(--tenant-primary) !important;
+  border: 1px solid var(--tenant-primary-light-border) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark .active-nav-tenant {
+  background-color: var(--tenant-primary-dark-bg) !important;
+  color: #ffffff !important;
+  border-color: var(--tenant-primary-dark-border) !important;
+}
+
+.table-header-tenant {
+  background-color: var(--tenant-primary-light-bg) !important;
+  border-bottom: 1px solid var(--tenant-primary-light-border) !important;
+}
+
+.dark .table-header-tenant {
+  background-color: var(--tenant-primary-dark-bg) !important;
+  border-bottom: 1px solid var(--tenant-primary-dark-border) !important;
+}
+
+.table-header-cell-tenant {
+  color: var(--tenant-primary) !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.card-header-banner-tenant {
+  background-image: linear-gradient(to right, rgba(var(--tenant-primary-rgb), 0.25), rgba(var(--tenant-primary-rgb), 0.1), transparent) !important;
+  border-bottom: 1px solid var(--tenant-primary-light-border) !important;
+}
+
+.glow-tenant-primary {
+  background-color: var(--tenant-primary) !important;
+  filter: blur(64px) !important;
+  opacity: 0.35 !important;
+}
+

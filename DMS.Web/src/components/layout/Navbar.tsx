@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, searchTer
       setDesktopPermission(perm);
       if (perm === 'granted') {
         try {
-          new Notification('🔔 Antigravity DMS Platform', {
+          new Notification(`🔔 ${config.appName} ${config.appNameHighlight} Platform`, {
             body: 'Windows Desktop OS Notifications are now active!',
             icon: '/favicon.ico'
           });

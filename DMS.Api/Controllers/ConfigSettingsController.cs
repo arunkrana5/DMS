@@ -164,11 +164,23 @@ public class ConfigSettingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> SaveSetting([FromBody] SaveConfigSettingRequest request, CancellationToken cancellationToken)
     {
+        var isSuperAdmin = string.Equals(_tenantContext.TenantCode, "SUPERADMIN", StringComparison.OrdinalIgnoreCase) || (_tenantContext.Roles != null && _tenantContext.Roles.Contains("SUPERADMIN"));
+        
+        int? targetTenantId = null;
+        if (request.TenantId.HasValue)
+        {
+            targetTenantId = request.TenantId.Value == 0 ? null : request.TenantId.Value;
+        }
+        else if (request.IsTenantSpecific)
+        {
+            targetTenantId = _tenantContext.TenantId;
+        }
+
         await _configService.SetSettingAsync(
             request.SettingKey,
             request.SettingValue,
             request.Category ?? "SYSTEM",
-            request.IsTenantSpecific ? _tenantContext.TenantId : null,
+            targetTenantId,
             request.ApplicationId,
             request.DataType ?? "String",
             request.Description,
@@ -184,6 +196,13 @@ public class ConfigSettingsController : ControllerBase
         if (setting == null)
         {
             return NotFound(ApiResponse.Fail("DMS014", $"Setting #{id} not found."));
+        }
+
+        var isSuperAdmin = string.Equals(_tenantContext.TenantCode, "SUPERADMIN", StringComparison.OrdinalIgnoreCase) || (_tenantContext.Roles != null && _tenantContext.Roles.Contains("SUPERADMIN"));
+
+        if (request.TenantId.HasValue)
+        {
+            setting.TenantId = request.TenantId.Value == 0 ? null : request.TenantId.Value;
         }
 
         setting.SettingValue = request.SettingValue;
@@ -234,7 +253,7 @@ public class ConfigSettingsController : ControllerBase
             new ConfigSetting { SettingKey = "SMTP.Password", SettingValue = "app-password-secret-123", Category = "SMTP", DataType = "Encrypted", Description = "SMTP Account App Password" },
             new ConfigSetting { SettingKey = "SMTP.EnableSsl", SettingValue = "true", Category = "SMTP", DataType = "Boolean", Description = "Enable TLS/SSL Encryption" },
             new ConfigSetting { SettingKey = "SMTP.FromEmail", SettingValue = "noreply@dms-platform.com", Category = "SMTP", DataType = "String", Description = "Sender Display Email Address" },
-            new ConfigSetting { SettingKey = "SMTP.FromName", SettingValue = "Antigravity DMS Platform", Category = "SMTP", DataType = "String", Description = "Sender Display Name" },
+            new ConfigSetting { SettingKey = "SMTP.FromName", SettingValue = "Enterprise DMS Platform", Category = "SMTP", DataType = "String", Description = "Sender Display Name" },
 
             // STORAGE (Storage Profiles & Pathing)
             new ConfigSetting { SettingKey = "Storage.DefaultProvider", SettingValue = "LOCAL", Category = "STORAGE", DataType = "String", Description = "System Default Storage Provider (LOCAL, AWS_S3, AZURE_BLOB)" },
@@ -253,10 +272,10 @@ public class ConfigSettingsController : ControllerBase
             new ConfigSetting { SettingKey = "Security.MaxVersionsPerDocument", SettingValue = "10", Category = "SECURITY", DataType = "Number", Description = "Maximum Document Version History Retained" },
 
             // JWT (Authentication & Security Tokens)
-            new ConfigSetting { SettingKey = "Jwt.SecretKey", SettingValue = "dms_super_secret_jwt_key_2026_antigravity_platform", Category = "JWT", DataType = "Encrypted", Description = "Global Cryptographically Generated JWT Signing Key" },
+            new ConfigSetting { SettingKey = "Jwt.SecretKey", SettingValue = "dms_super_secret_jwt_key_2026_enterprise_platform", Category = "JWT", DataType = "Encrypted", Description = "Global Cryptographically Generated JWT Signing Key" },
             new ConfigSetting { SettingKey = "Jwt.ExpiryMinutes", SettingValue = "480", Category = "JWT", DataType = "Number", Description = "JWT Token Expiry (8 Hours)" },
-            new ConfigSetting { SettingKey = "Jwt.Issuer", SettingValue = "AntigravityDmsApi", Category = "JWT", DataType = "String", Description = "JWT Valid Token Issuer" },
-            new ConfigSetting { SettingKey = "Jwt.Audience", SettingValue = "AntigravityDmsClients", Category = "JWT", DataType = "String", Description = "JWT Valid Token Audience" },
+            new ConfigSetting { SettingKey = "Jwt.Issuer", SettingValue = "EnterpriseDmsApi", Category = "JWT", DataType = "String", Description = "JWT Valid Token Issuer" },
+            new ConfigSetting { SettingKey = "Jwt.Audience", SettingValue = "EnterpriseDmsClients", Category = "JWT", DataType = "String", Description = "JWT Valid Token Audience" },
 
             // WEBHOOKS (Webhook Event Dispatching)
             new ConfigSetting { SettingKey = "Webhooks.EnableWebhooks", SettingValue = "true", Category = "WEBHOOKS", DataType = "Boolean", Description = "Enable / Disable Real-Time Webhook Dispatching" },
@@ -276,7 +295,13 @@ public class ConfigSettingsController : ControllerBase
             new ConfigSetting { SettingKey = "Theme.PrimaryColorName", SettingValue = "blue", Category = "THEME", DataType = "String", Description = "Primary Theme Palette Name (blue, indigo, slate, emerald, violet)" },
             new ConfigSetting { SettingKey = "Theme.CompanyName", SettingValue = "Arun Rana Enterprise", Category = "THEME", DataType = "String", Description = "Enterprise Organization Company Name" },
             new ConfigSetting { SettingKey = "Theme.SupportEmail", SettingValue = "support@dms-azie.onrender.com", Category = "THEME", DataType = "String", Description = "Global Technical Support Email" },
-            new ConfigSetting { SettingKey = "Theme.CopyrightText", SettingValue = "© 2026 Arun Rana. All rights reserved.", Category = "THEME", DataType = "String", Description = "Footer Copyright Statement" }
+            new ConfigSetting { SettingKey = "Theme.CopyrightText", SettingValue = "© 2026 Arun Rana. All rights reserved.", Category = "THEME", DataType = "String", Description = "Footer Copyright Statement" },
+
+            // AI (Artificial Intelligence LLM Engine Settings)
+            new ConfigSetting { SettingKey = "AI.Enabled", SettingValue = "true", Category = "AI", DataType = "Boolean", Description = "Enable / Disable AI release notes generator engine" },
+            new ConfigSetting { SettingKey = "AI.ProviderUrl", SettingValue = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent", Category = "AI", DataType = "String", Description = "AI LLM Endpoint URL (Google Gemini or OpenAI compatible)" },
+            new ConfigSetting { SettingKey = "AI.ApiKey", SettingValue = "", Category = "AI", DataType = "Encrypted", Description = "Secret API key for Google Gemini / OpenAI LLM provider" },
+            new ConfigSetting { SettingKey = "AI.Model", SettingValue = "gemini-1.5-flash", Category = "AI", DataType = "String", Description = "Target AI Model Identifier (e.g. gemini-1.5-flash, gpt-4o-mini)" }
         };
 
         int addedCount = 0;
@@ -305,6 +330,7 @@ public class SaveConfigSettingRequest
     public string? SettingValue { get; set; }
     public string? Category { get; set; } = "SYSTEM";
     public bool IsTenantSpecific { get; set; } = true;
+    public int? TenantId { get; set; }
     public int? ApplicationId { get; set; }
     public string? DataType { get; set; } = "String";
     public string? Description { get; set; }

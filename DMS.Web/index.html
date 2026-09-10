@@ -4,12 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Antigravity Enterprise DMS v2.0</title>
+    <title>Enterprise DMS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        try {
+          var cachedHex = localStorage.getItem('dms_tenant_theme_color');
+          if (cachedHex && cachedHex.startsWith('#')) {
+            var cleanHex = cachedHex.replace('#', '');
+            if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(function(c){return c+c;}).join('');
+            if (cleanHex.length === 6) {
+              var num = parseInt(cleanHex, 16);
+              var r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
+              var nr = Math.max(0, Math.min(255, Math.round(r * 0.85)));
+              var ng = Math.max(0, Math.min(255, Math.round(g * 0.85)));
+              var nb = Math.max(0, Math.min(255, Math.round(b * 0.85)));
+              var hoverHex = '#' + ((1 << 24) + (nr << 16) + (ng << 8) + nb).toString(16).slice(1);
+              var gr = Math.min(255, Math.round(r * 0.85 + 30)), gg = Math.min(255, Math.round(g * 0.85 + 20)), gb = Math.min(255, Math.round(b * 1.1 + 10));
+              var gradEnd = '#' + ((1 << 24) + (gr << 16) + (gg << 8) + gb).toString(16).slice(1);
+              var root = document.documentElement;
+              root.style.setProperty('--tenant-primary', cachedHex);
+              root.style.setProperty('--tenant-primary-rgb', r + ',' + g + ',' + b);
+              root.style.setProperty('--tenant-primary-hover', hoverHex);
+              root.style.setProperty('--tenant-gradient-start', cachedHex);
+              root.style.setProperty('--tenant-gradient-end', gradEnd);
+              root.style.setProperty('--tenant-primary-light-bg', 'rgba(' + r + ',' + g + ',' + b + ',0.08)');
+              root.style.setProperty('--tenant-primary-dark-bg', 'rgba(' + r + ',' + g + ',' + b + ',0.22)');
+              root.style.setProperty('--tenant-primary-light-border', 'rgba(' + r + ',' + g + ',' + b + ',0.25)');
+              root.style.setProperty('--tenant-primary-dark-border', 'rgba(' + r + ',' + g + ',' + b + ',0.45)');
+              root.style.setProperty('--tenant-primary-text', cachedHex);
+              root.style.setProperty('--tenant-ring-color', 'rgba(' + r + ',' + g + ',' + b + ',0.25)');
+            }
+          }
+        } catch(e){}
+      })();
+    </script>
   </head>
-  <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-600 selection:text-white">
+  <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-[var(--tenant-primary)] selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
